@@ -9,6 +9,9 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCourses from "./pages/admin/Courses";
 import AdminUsers from "./pages/admin/Users";
+import AdminAnalytics from "./pages/admin/Analytics";
+import AdminTests from "./pages/admin/Tests";
+import AdminRewards from "./pages/admin/Rewards";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentCourses from "./pages/student/Courses";
 import StudentCourseDetail from "./pages/student/CourseDetail";
@@ -33,6 +36,9 @@ const App = () => (
           <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
           <Route path={ROUTES.ADMIN.COURSES} element={<AdminCourses />} />
           <Route path={ROUTES.ADMIN.USERS} element={<AdminUsers />} />
+          <Route path={ROUTES.ADMIN.ANALYTICS} element={<AdminAnalytics />} />
+          <Route path={ROUTES.ADMIN.TESTS} element={<AdminTests />} />
+          <Route path={ROUTES.ADMIN.REWARDS} element={<AdminRewards />} />
           
           <Route path={ROUTES.STUDENT.DASHBOARD} element={<StudentDashboard />} />
           <Route path={ROUTES.STUDENT.COURSES} element={<StudentCourses />} />
