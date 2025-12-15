@@ -19,6 +19,10 @@ export interface Course {
   image: string;
   published: boolean;
   passScore: number;
+  level?: string;
+  students?: number;
+  rating?: number;
+  instructor?: string;
 }
 
 export interface Lesson {
@@ -28,6 +32,9 @@ export interface Lesson {
   content: string;
   type: 'text' | 'video' | 'pdf';
   order: number;
+  duration: number;
+  videoUrl?: string;
+  description: string;
 }
 
 export interface Test {
