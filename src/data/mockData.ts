@@ -1,0 +1,152 @@
+import { Course, User, CourseProgress, Reward } from '@/types';
+
+export const mockCourses: Course[] = [
+  {
+    id: '1',
+    title: 'Определение целевой аудитории',
+    description: 'Научитесь точно определять и сегментировать вашу целевую аудиторию для максимальной эффективности бизнеса',
+    duration: 45,
+    lessonsCount: 8,
+    category: 'Маркетинг',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800',
+    published: true,
+    passScore: 70,
+  },
+  {
+    id: '2',
+    title: 'Формирование ценностного предложения',
+    description: 'Создайте уникальное ценностное предложение, которое выделит вас среди конкурентов',
+    duration: 50,
+    lessonsCount: 10,
+    category: 'Стратегия',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
+    published: true,
+    passScore: 75,
+  },
+  {
+    id: '3',
+    title: 'Анализ рынка и конкурентного окружения',
+    description: 'Освойте методы глубокого анализа рынка и конкурентов для принятия обоснованных решений',
+    duration: 55,
+    lessonsCount: 12,
+    category: 'Аналитика',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800',
+    published: true,
+    passScore: 70,
+  },
+  {
+    id: '4',
+    title: 'Построение бизнес-моделей и финансовое планирование',
+    description: 'Разработайте устойчивую бизнес-модель и финансовый план для вашего проекта',
+    duration: 60,
+    lessonsCount: 14,
+    category: 'Финансы',
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800',
+    published: true,
+    passScore: 80,
+  },
+  {
+    id: '5',
+    title: 'Разработка и тестирование MVP',
+    description: 'Создайте минимально жизнеспособный продукт и научитесь эффективно его тестировать',
+    duration: 48,
+    lessonsCount: 9,
+    category: 'Продукт',
+    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800',
+    published: true,
+    passScore: 75,
+  },
+];
+
+export const mockUsers: User[] = [
+  {
+    id: '1',
+    email: 'admin@company.com',
+    name: 'Администратор',
+    role: 'admin',
+    registrationDate: '2024-01-15',
+    lastActive: '2024-12-15',
+  },
+  {
+    id: '2',
+    email: 'student@company.com',
+    name: 'Иван Петров',
+    role: 'student',
+    registrationDate: '2024-02-20',
+    lastActive: '2024-12-14',
+  },
+  {
+    id: '3',
+    email: 'maria@company.com',
+    name: 'Мария Сидорова',
+    role: 'student',
+    registrationDate: '2024-03-10',
+    lastActive: '2024-12-13',
+  },
+];
+
+export const mockRewards: Reward[] = [
+  {
+    id: '1',
+    name: 'Эксперт по аудитории',
+    icon: '🎯',
+    color: '#8B5CF6',
+    courseId: '1',
+  },
+  {
+    id: '2',
+    name: 'Мастер ценности',
+    icon: '💎',
+    color: '#0EA5E9',
+    courseId: '2',
+  },
+  {
+    id: '3',
+    name: 'Аналитик рынка',
+    icon: '📊',
+    color: '#F97316',
+    courseId: '3',
+  },
+  {
+    id: '4',
+    name: 'Финансовый стратег',
+    icon: '💰',
+    color: '#10B981',
+    courseId: '4',
+  },
+  {
+    id: '5',
+    name: 'MVP разработчик',
+    icon: '🚀',
+    color: '#D946EF',
+    courseId: '5',
+  },
+];
+
+export const mockProgress: CourseProgress[] = [
+  {
+    courseId: '1',
+    userId: '2',
+    completedLessons: 8,
+    totalLessons: 8,
+    testScore: 85,
+    completed: true,
+    earnedRewards: ['1'],
+  },
+  {
+    courseId: '2',
+    userId: '2',
+    completedLessons: 5,
+    totalLessons: 10,
+    completed: false,
+    earnedRewards: [],
+  },
+  {
+    courseId: '3',
+    userId: '2',
+    completedLessons: 0,
+    totalLessons: 12,
+    completed: false,
+    earnedRewards: [],
+  },
+];
