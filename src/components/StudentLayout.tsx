@@ -1,5 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { ROUTES } from '@/constants/routes';
@@ -11,6 +12,13 @@ interface StudentLayoutProps {
 export default function StudentLayout({ children }: StudentLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated || user?.role !== 'student') {
+      navigate(ROUTES.LOGIN);
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const menuItems = [
     { icon: 'Home', label: 'Главная', path: ROUTES.STUDENT.DASHBOARD },
@@ -21,22 +29,34 @@ export default function StudentLayout({ children }: StudentLayoutProps) {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
+    logout();
     navigate(ROUTES.LOGIN);
   };
+
+  if (!isAuthenticated || user?.role !== 'student') {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
               <Icon name="GraduationCap" className="text-white" size={20} />
             </div>
             <div>
               <h2 className="font-bold text-gray-900">Обучение</h2>
               <p className="text-xs text-gray-500">Личный кабинет</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+              {user?.name.split(' ').map(n => n[0]).join('') || 'С'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
         </div>

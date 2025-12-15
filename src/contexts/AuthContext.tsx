@@ -1,0 +1,54 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User } from '@/types';
+import { mockUsers } from '@/data/mockData';
+
+interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => boolean;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const login = (email: string, password: string): boolean => {
+    const foundUser = mockUsers.find(u => u.email === email);
+    
+    if (foundUser && password === 'password') {
+      setUser(foundUser);
+      localStorage.setItem('currentUser', JSON.stringify(foundUser));
+      return true;
+    }
+    
+    return false;
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('currentUser');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
