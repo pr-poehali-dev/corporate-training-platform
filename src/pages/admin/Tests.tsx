@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import Icon from '@/components/ui/icon';
 import { mockCourses, mockQuestions } from '@/data/mockData';
 
 export default function Tests() {
+  const navigate = useNavigate();
   const [selectedCourse, setSelectedCourse] = useState<string>('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [questionType, setQuestionType] = useState<'single' | 'multiple'>('single');
@@ -48,9 +50,16 @@ export default function Tests() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Управление тестами</h1>
             <p className="text-gray-600">Создавайте и редактируйте тестовые вопросы для курсов</p>
           </div>
+          <Button 
+            onClick={() => navigate('/admin/tests/new')}
+            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+          >
+            <Icon name="Plus" className="mr-2" size={18} />
+            Создать тест
+          </Button>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
+              <Button className="hidden">
                 <Icon name="Plus" className="mr-2" size={18} />
                 Добавить вопрос
               </Button>

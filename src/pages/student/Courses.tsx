@@ -117,7 +117,7 @@ export default function StudentCourses() {
                   <Button 
                     className="w-full" 
                     variant={progress?.completed ? 'outline' : 'default'}
-                    onClick={() => navigate(ROUTES.STUDENT.COURSE_DETAIL.replace(':id', course.id))}
+                    onClick={() => navigate(`/student/courses/${course.id}`)}
                   >
                     {progress?.completed ? (
                       <>

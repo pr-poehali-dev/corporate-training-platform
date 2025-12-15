@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import StudentLayout from '@/components/StudentLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,9 +10,25 @@ import Icon from '@/components/ui/icon';
 import { mockProgress, mockRewards } from '@/data/mockData';
 
 export default function StudentProfile() {
+  const { user } = useAuth();
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState('');
+  
   const userId = '2';
   const userProgress = mockProgress.filter(p => p.userId === userId);
   const earnedRewards = userProgress.flatMap(p => p.earnedRewards);
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarUrl(reader.result as string);
+        setIsEditingAvatar(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <StudentLayout>
@@ -95,11 +113,52 @@ export default function StudentProfile() {
             <Card className="border-0 shadow-md">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
-                    ИП
+                  <div className="relative group mb-4">
+                    {avatarUrl ? (
+                      <img 
+                        src={avatarUrl} 
+                        alt="Avatar" 
+                        className="w-24 h-24 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                        {user?.name.split(' ').map(n => n[0]).join('') || 'ИП'}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => setIsEditingAvatar(true)}
+                      className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Icon name="Camera" className="text-white" size={24} />
+                    </button>
                   </div>
-                  <h3 className="font-bold text-xl text-gray-900 mb-1">Иван Петров</h3>
-                  <p className="text-sm text-gray-600 mb-2">student@company.com</p>
+                  
+                  {isEditingAvatar && (
+                    <div className="w-full mb-4">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        className="hidden"
+                        id="avatar-upload"
+                      />
+                      <label
+                        htmlFor="avatar-upload"
+                        className="cursor-pointer text-sm text-orange-600 hover:text-orange-700 underline"
+                      >
+                        Выберите файл
+                      </label>
+                      <button
+                        onClick={() => setIsEditingAvatar(false)}
+                        className="ml-3 text-sm text-gray-500 hover:text-gray-700"
+                      >
+                        Отмена
+                      </button>
+                    </div>
+                  )}
+                  
+                  <h3 className="font-bold text-xl text-gray-900 mb-1">{user?.name || 'Иван Петров'}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{user?.email || 'student@company.com'}</p>
                   <Badge className="mb-4">Обучающийся</Badge>
                   <div className="w-full pt-4 border-t border-gray-200">
                     <div className="text-sm text-gray-600 mb-1">Участник с</div>

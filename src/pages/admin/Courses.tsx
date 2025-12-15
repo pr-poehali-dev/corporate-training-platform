@@ -5,8 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { mockCourses } from '@/data/mockData';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminCourses() {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
 
   const filteredCourses = mockCourses.filter(course => {
@@ -23,7 +25,10 @@ export default function AdminCourses() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Управление курсами</h1>
             <p className="text-gray-600">Создавайте и редактируйте образовательный контент</p>
           </div>
-          <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
+          <Button 
+            onClick={() => navigate('/admin/courses/new')}
+            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+          >
             <Icon name="Plus" className="mr-2" size={18} />
             Создать курс
           </Button>

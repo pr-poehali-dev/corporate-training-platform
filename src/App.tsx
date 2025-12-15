@@ -9,14 +9,18 @@ import { ROUTES } from "@/constants/routes";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCourses from "./pages/admin/Courses";
+import AdminCourseEditor from "./pages/admin/CourseEditor";
 import AdminUsers from "./pages/admin/Users";
 import AdminAnalytics from "./pages/admin/Analytics";
 import AdminTests from "./pages/admin/Tests";
+import AdminTestEditor from "./pages/admin/TestEditor";
 import AdminRewards from "./pages/admin/Rewards";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentCourses from "./pages/student/Courses";
 import StudentCourseDetail from "./pages/student/CourseDetail";
+import StudentCourseDetails from "./pages/student/CourseDetails";
 import StudentTest from "./pages/student/Test";
+import StudentTestPage from "./pages/student/TestPage";
 import StudentRewards from "./pages/student/Rewards";
 import StudentProgress from "./pages/student/Progress";
 import StudentProfile from "./pages/student/Profile";
@@ -37,13 +41,19 @@ const App = () => (
             
             <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
             <Route path={ROUTES.ADMIN.COURSES} element={<AdminCourses />} />
+            <Route path="/admin/courses/new" element={<AdminCourseEditor />} />
+            <Route path="/admin/courses/:courseId/edit" element={<AdminCourseEditor />} />
             <Route path={ROUTES.ADMIN.USERS} element={<AdminUsers />} />
             <Route path={ROUTES.ADMIN.ANALYTICS} element={<AdminAnalytics />} />
             <Route path={ROUTES.ADMIN.TESTS} element={<AdminTests />} />
+            <Route path="/admin/tests/new" element={<AdminTestEditor />} />
+            <Route path="/admin/tests/:testId/edit" element={<AdminTestEditor />} />
             <Route path={ROUTES.ADMIN.REWARDS} element={<AdminRewards />} />
             
             <Route path={ROUTES.STUDENT.DASHBOARD} element={<StudentDashboard />} />
             <Route path={ROUTES.STUDENT.COURSES} element={<StudentCourses />} />
+            <Route path="/student/courses/:courseId" element={<StudentCourseDetails />} />
+            <Route path="/student/courses/:courseId/test/:testId" element={<StudentTestPage />} />
             <Route path={ROUTES.STUDENT.COURSE_DETAIL} element={<StudentCourseDetail />} />
             <Route path={ROUTES.STUDENT.TEST} element={<StudentTest />} />
             <Route path={ROUTES.STUDENT.REWARDS} element={<StudentRewards />} />
