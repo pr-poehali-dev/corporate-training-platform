@@ -69,9 +69,18 @@ export default function AdminCourses() {
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <h3 className="font-bold text-base text-gray-900 line-clamp-2 flex-1">{course.title}</h3>
-                <Badge variant={course.published ? 'default' : 'secondary'} className="shrink-0 text-xs">
-                  {course.published ? 'Опубл.' : 'Черн.'}
-                </Badge>
+                <div className="flex gap-1 shrink-0">
+                  <Badge 
+                    variant={course.accessType === 'open' ? 'outline' : 'default'} 
+                    className={`text-xs ${course.accessType === 'closed' ? 'bg-purple-500' : ''}`}
+                  >
+                    <Icon name={course.accessType === 'open' ? 'Unlock' : 'Lock'} size={10} className="mr-1" />
+                    {course.accessType === 'open' ? 'Откр.' : 'Закр.'}
+                  </Badge>
+                  <Badge variant={course.published ? 'default' : 'secondary'} className="text-xs">
+                    {course.published ? 'Опубл.' : 'Черн.'}
+                  </Badge>
+                </div>
               </div>
               <p className="text-sm text-gray-600 mb-4 line-clamp-2">{course.description}</p>
               <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-4">

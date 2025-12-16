@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import Icon from '@/components/ui/icon';
-import { mockCourses, mockProgress } from '@/data/mockData';
+import { mockCourses, mockProgress, mockAssignments } from '@/data/mockData';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
@@ -16,8 +16,15 @@ export default function StudentCourses() {
 
   const userProgress = mockProgress.filter(p => p.userId === userId);
   const progressMap = new Map(userProgress.map(p => [p.courseId, p]));
+  
+  const userAssignments = mockAssignments.filter(a => a.userId === userId);
+  const assignedCourseIds = new Set(userAssignments.map(a => a.courseId));
 
-  const filteredCourses = mockCourses.filter(course => {
+  const availableCourses = mockCourses.filter(course => {
+    return course.accessType === 'open' || assignedCourseIds.has(course.id);
+  });
+
+  const filteredCourses = availableCourses.filter(course => {
     const progress = progressMap.get(course.id);
     if (filter === 'inProgress') return progress && !progress.completed && progress.completedLessons > 0;
     if (filter === 'completed') return progress?.completed;
@@ -37,7 +44,7 @@ export default function StudentCourses() {
           onClick={() => setFilter('all')}
           size="sm"
         >
-          Все ({mockCourses.length})
+          Все ({availableCourses.length})
         </Button>
         <Button
           variant={filter === 'inProgress' ? 'default' : 'outline'}
@@ -61,6 +68,7 @@ export default function StudentCourses() {
             const progressPercent = progress
               ? (progress.completedLessons / progress.totalLessons) * 100
               : 0;
+            const isAssigned = assignedCourseIds.has(course.id);
 
             return (
               <Card key={course.id} className="border-0 shadow-md hover:shadow-lg transition-all overflow-hidden group">
@@ -70,6 +78,14 @@ export default function StudentCourses() {
                     alt={course.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  <div className="absolute top-3 left-3">
+                    {course.accessType === 'closed' && isAssigned && (
+                      <Badge variant="outline" className="bg-white/90 backdrop-blur-sm border-purple-300 text-purple-700">
+                        <Icon name="Lock" size={12} className="mr-1" />
+                        Назначен
+                      </Badge>
+                    )}
+                  </div>
                   <div className="absolute top-3 right-3">
                     {progress?.completed ? (
                       <Badge className="bg-green-500">

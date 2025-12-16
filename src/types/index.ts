@@ -27,6 +27,7 @@ export interface Course {
   startDate?: string;
   endDate?: string;
   prerequisiteCourses?: string[];
+  accessType: 'open' | 'closed';
 }
 
 export interface Lesson {

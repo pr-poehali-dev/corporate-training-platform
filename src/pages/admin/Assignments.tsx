@@ -222,11 +222,21 @@ export default function AdminAssignments() {
                       <SelectContent>
                         {mockCourses.map((course) => (
                           <SelectItem key={course.id} value={course.id}>
-                            {course.title} ({course.category})
+                            <div className="flex items-center gap-2">
+                              {course.accessType === 'closed' && (
+                                <Icon name="Lock" size={12} className="text-purple-500" />
+                              )}
+                              <span>{course.title}</span>
+                              <span className="text-xs text-gray-500">({course.category})</span>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                    <p className="text-xs text-gray-500">
+                      <Icon name="Info" size={12} className="inline mr-1" />
+                      Назначение доступно для всех курсов. Закрытые курсы требуют назначения для доступа.
+                    </p>
                   </div>
 
                   <div className="grid gap-2">

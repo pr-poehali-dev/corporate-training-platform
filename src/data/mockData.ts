@@ -18,6 +18,7 @@ export const mockCourses: Course[] = [
     status: 'published',
     startDate: '01.01.2024',
     endDate: '31.12.2024',
+    accessType: 'open',
   },
   {
     id: '2',
@@ -36,6 +37,7 @@ export const mockCourses: Course[] = [
     status: 'published',
     startDate: '15.02.2024',
     endDate: '15.06.2024',
+    accessType: 'closed',
   },
   {
     id: '3',
@@ -54,6 +56,7 @@ export const mockCourses: Course[] = [
     status: 'published',
     startDate: '01.03.2024',
     endDate: '01.09.2024',
+    accessType: 'closed',
   },
   {
     id: '4',
@@ -72,6 +75,7 @@ export const mockCourses: Course[] = [
     status: 'published',
     startDate: '10.04.2024',
     endDate: '10.10.2024',
+    accessType: 'open',
   },
   {
     id: '5',
@@ -90,6 +94,7 @@ export const mockCourses: Course[] = [
     status: 'published',
     startDate: '20.05.2024',
     endDate: '20.08.2024',
+    accessType: 'open',
   },
 ];
 
