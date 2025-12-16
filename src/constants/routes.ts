@@ -19,7 +19,7 @@ export const ROUTES = {
     COURSES: '/student/courses',
     COURSE_DETAIL: '/student/courses/:id',
     LESSON: '/student/courses/:courseId/lesson/:lessonId',
-    TEST: '/student/test/:id',
+    TEST: '/student/courses/:courseId/test/:testId',
     PROFILE: '/student/profile',
     REWARDS: '/student/rewards',
     PROGRESS: '/student/progress',

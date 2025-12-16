@@ -26,7 +26,6 @@ import StudentCourseDetail from "./pages/student/CourseDetail";
 import StudentCourseDetails from "./pages/student/CourseDetails";
 import StudentLesson from "./pages/student/Lesson";
 import StudentTest from "./pages/student/Test";
-import StudentTestPage from "./pages/student/TestPage";
 import StudentProfile from "./pages/student/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -63,9 +62,7 @@ const App = () => (
             <Route path={ROUTES.STUDENT.COURSES} element={<StudentCourses />} />
             <Route path="/student/courses/:courseId" element={<StudentCourseDetails />} />
             <Route path="/student/courses/:courseId/lesson/:lessonId" element={<StudentLesson />} />
-            <Route path="/student/courses/:courseId/test/:testId" element={<StudentTestPage />} />
-            <Route path={ROUTES.STUDENT.COURSE_DETAIL} element={<StudentCourseDetail />} />
-            <Route path={ROUTES.STUDENT.TEST} element={<StudentTest />} />
+            <Route path="/student/courses/:courseId/test/:testId" element={<StudentTest />} />
             <Route path={ROUTES.STUDENT.PROFILE} element={<StudentProfile />} />
             
             <Route path="*" element={<NotFound />} />

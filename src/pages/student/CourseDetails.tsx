@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import Icon from '@/components/ui/icon';
 import { ROUTES } from '@/constants/routes';
-import { mockCourses, mockLessons, mockProgress } from '@/data/mockData';
+import { mockCourses, mockLessons, mockProgress, mockTests } from '@/data/mockData';
 
 export default function CourseDetails() {
   const { courseId } = useParams();
@@ -16,6 +16,7 @@ export default function CourseDetails() {
   const course = mockCourses.find(c => c.id === courseId);
   const lessons = mockLessons.filter(l => l.courseId === courseId).sort((a, b) => a.order - b.order);
   const progress = mockProgress.find(p => p.courseId === courseId && p.userId === userId);
+  const courseTest = mockTests.find(t => t.courseId === courseId && t.status === 'published');
 
   if (!course) {
     return (
@@ -198,6 +199,44 @@ export default function CourseDetails() {
                   </button>
                 );
               })}
+
+              {courseTest && (
+                <button
+                  onClick={() => navigate(`/student/courses/${courseId}/test/${courseTest.id}`)}
+                  className="w-full text-left p-4 rounded-lg border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 hover:border-purple-300 transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center flex-shrink-0">
+                      <Icon name="ClipboardCheck" size={18} />
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Icon name="FileCheck" size={16} className="text-purple-600" />
+                        <span className="font-semibold text-gray-900">{courseTest.title}</span>
+                        <Badge className="ml-2 bg-purple-500">Итоговый тест</Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 line-clamp-1">{courseTest.description}</p>
+                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Icon name="HelpCircle" size={12} />
+                          {courseTest.questionsCount} вопросов
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Icon name="Clock" size={12} />
+                          {courseTest.timeLimit} мин
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Icon name="Target" size={12} />
+                          Проходной балл: {courseTest.passScore}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <Icon name="ChevronRight" size={20} className="text-purple-400" />
+                  </div>
+                </button>
+              )}
             </div>
           </CardContent>
         </Card>
