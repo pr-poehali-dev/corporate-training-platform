@@ -29,8 +29,7 @@ interface CourseFormData {
   image: string;
   lessons: Lesson[];
   status: 'draft' | 'published' | 'archived';
-  startDate: string;
-  endDate: string;
+  accessType: 'open' | 'closed';
 }
 
 const initialFormData: CourseFormData = {
@@ -42,8 +41,7 @@ const initialFormData: CourseFormData = {
   image: '',
   lessons: [],
   status: 'draft',
-  startDate: '',
-  endDate: '',
+  accessType: 'open',
 };
 
 export default function CourseEditor() {
@@ -185,14 +183,16 @@ export default function CourseEditor() {
           />
         </div>
 
-        <CourseLessonsList
-          lessons={formData.lessons}
-          onAddLesson={handleAddLesson}
-          onEditLesson={handleEditLesson}
-          onDeleteLesson={handleDeleteLesson}
-          onReorderLesson={handleReorderLesson}
-          getTypeIcon={getTypeIcon}
-        />
+        <div className="pt-4">
+          <CourseLessonsList
+            lessons={formData.lessons}
+            onAddLesson={handleAddLesson}
+            onEditLesson={handleEditLesson}
+            onDeleteLesson={handleDeleteLesson}
+            onReorderLesson={handleReorderLesson}
+            getTypeIcon={getTypeIcon}
+          />
+        </div>
       </div>
 
       <LessonDialog

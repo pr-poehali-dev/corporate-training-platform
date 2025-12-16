@@ -9,8 +9,7 @@ interface CourseFormData {
   instructor: string;
   image: string;
   status: 'draft' | 'published' | 'archived';
-  startDate: string;
-  endDate: string;
+  accessType: 'open' | 'closed';
 }
 
 interface CourseInfoFormProps {
@@ -120,44 +119,39 @@ export default function CourseInfoForm({ formData, onInputChange }: CourseInfoFo
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Статус
-          </label>
-          <select
-            value={formData.status}
-            onChange={(e) => onInputChange('status', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          >
-            <option value="draft">Черновик</option>
-            <option value="published">Опубликован</option>
-            <option value="archived">Архив</option>
-          </select>
-        </div>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Дата начала
+              Статус публикации
             </label>
-            <input
-              type="date"
-              value={formData.startDate}
-              onChange={(e) => onInputChange('startDate', e.target.value)}
+            <select
+              value={formData.status}
+              onChange={(e) => onInputChange('status', e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
+            >
+              <option value="draft">Черновик</option>
+              <option value="published">Опубликован</option>
+              <option value="archived">Архив</option>
+            </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Дата окончания
+              Тип доступа
             </label>
-            <input
-              type="date"
-              value={formData.endDate}
-              onChange={(e) => onInputChange('endDate', e.target.value)}
+            <select
+              value={formData.accessType}
+              onChange={(e) => onInputChange('accessType', e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
+            >
+              <option value="open">Открытый</option>
+              <option value="closed">Закрытый</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              {formData.accessType === 'open' 
+                ? 'Доступен всем студентам' 
+                : 'Требуется назначение администратором'}
+            </p>
           </div>
         </div>
 

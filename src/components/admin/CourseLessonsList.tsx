@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
@@ -40,84 +40,119 @@ export default function CourseLessonsList({
     }
   };
 
-  return (
-    <Card className="col-span-3 p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold flex items-center gap-2">
-          <Icon name="List" size={20} />
-          Программа курса
-        </h2>
-        <Button onClick={onAddLesson}>
-          <Icon name="Plus" className="mr-2" size={16} />
-          Добавить урок
-        </Button>
-      </div>
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'video': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'text': return 'bg-green-100 text-green-700 border-green-200';
+      case 'test': return 'bg-purple-100 text-purple-700 border-purple-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
 
-      {lessons.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          <Icon name="BookOpen" size={48} className="mx-auto mb-4 opacity-30" />
-          <p>Уроков пока нет. Добавьте первый урок.</p>
+  return (
+    <Card className="border-0 shadow-md">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Icon name="List" size={20} />
+            Программа курса
+            {lessons.length > 0 && (
+              <Badge variant="outline" className="ml-2">{lessons.length} уроков</Badge>
+            )}
+          </CardTitle>
+          <Button onClick={onAddLesson}>
+            <Icon name="Plus" className="mr-2" size={16} />
+            Добавить урок
+          </Button>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {lessons.map((lesson, index) => (
-            <div
-              key={lesson.id}
-              className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <div className="flex items-center gap-3 flex-1">
-                <span className="text-sm font-medium text-gray-500 w-6">
-                  {index + 1}
-                </span>
-                <Icon name={getTypeIcon(lesson.type)} size={20} className="text-gray-600" />
-                <div className="flex-1">
-                  <div className="font-medium">{lesson.title || 'Без названия'}</div>
-                  <div className="text-sm text-gray-500">
-                    <Badge variant="secondary" className="text-xs">
-                      {getTypeName(lesson.type)}
-                    </Badge>
-                    <span className="ml-2">{lesson.duration} мин</span>
+      </CardHeader>
+
+      <CardContent>
+        {lessons.length === 0 ? (
+          <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Icon name="BookOpen" size={32} className="text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Уроков пока нет</h3>
+            <p className="text-gray-600 mb-4">Создайте первый урок для вашего курса</p>
+            <Button onClick={onAddLesson} variant="outline">
+              <Icon name="Plus" className="mr-2" size={16} />
+              Добавить первый урок
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {lessons.map((lesson, index) => (
+              <div
+                key={lesson.id}
+                className="group relative flex items-center gap-4 p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-primary hover:shadow-sm transition-all"
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <div className={`w-10 h-10 rounded-lg ${getTypeColor(lesson.type).split(' ')[0]} flex items-center justify-center flex-shrink-0`}>
+                      <Icon name={getTypeIcon(lesson.type) as any} size={20} className={getTypeColor(lesson.type).split(' ')[1]} />
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-gray-900 mb-1 truncate">
+                      {lesson.title || 'Без названия'}
+                    </h4>
+                    <div className="flex items-center gap-3 text-sm">
+                      <Badge variant="outline" className={`text-xs ${getTypeColor(lesson.type)}`}>
+                        {getTypeName(lesson.type)}
+                      </Badge>
+                      <span className="text-gray-500 flex items-center gap-1">
+                        <Icon name="Clock" size={14} />
+                        {lesson.duration} мин
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onReorderLesson(lesson.id, 'up')}
-                  disabled={index === 0}
-                >
-                  <Icon name="ChevronUp" size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onReorderLesson(lesson.id, 'down')}
-                  disabled={index === lessons.length - 1}
-                >
-                  <Icon name="ChevronDown" size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEditLesson(lesson)}
-                >
-                  <Icon name="Edit" size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDeleteLesson(lesson.id)}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  <Icon name="Trash2" size={16} />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onReorderLesson(lesson.id, 'up')}
+                    disabled={index === 0}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Icon name="ChevronUp" size={18} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onReorderLesson(lesson.id, 'down')}
+                    disabled={index === lessons.length - 1}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Icon name="ChevronDown" size={18} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEditLesson(lesson)}
+                  >
+                    <Icon name="Edit" size={18} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDeleteLesson(lesson.id)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Icon name="Trash2" size={18} />
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </CardContent>
     </Card>
   );
 }
