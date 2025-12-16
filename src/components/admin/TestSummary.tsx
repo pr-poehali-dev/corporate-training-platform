@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 
 interface Question {
@@ -11,12 +12,22 @@ interface Question {
 interface TestSummaryProps {
   questions: Question[];
   totalPoints: number;
+  formData: {
+    status: 'draft' | 'published';
+    passScore: number;
+    timeLimit: number;
+    attempts: number;
+  };
 }
 
-export default function TestSummary({ questions, totalPoints }: TestSummaryProps) {
+export default function TestSummary({ questions, totalPoints, formData }: TestSummaryProps) {
   const singleChoiceCount = questions.filter(q => q.type === 'single').length;
   const multipleChoiceCount = questions.filter(q => q.type === 'multiple').length;
   const textCount = questions.filter(q => q.type === 'text').length;
+
+  const getStatusColor = (status: string) => {
+    return status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+  };
 
   return (
     <Card className="p-6 h-fit sticky top-6">
@@ -26,13 +37,34 @@ export default function TestSummary({ questions, totalPoints }: TestSummaryProps
       </h2>
 
       <div className="space-y-4">
-        <div className="flex justify-between">
-          <span className="text-gray-600">Всего вопросов:</span>
-          <span className="font-bold">{questions.length}</span>
+        <div className="flex items-center justify-between">
+          <span className="text-gray-600">Статус:</span>
+          <Badge className={getStatusColor(formData.status)}>
+            {formData.status === 'published' ? 'Опубликован' : 'Черновик'}
+          </Badge>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-600">Максимальный балл:</span>
-          <span className="font-bold">{totalPoints}</span>
+
+        <div className="border-t pt-4 space-y-3">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Всего вопросов:</span>
+            <span className="font-bold">{questions.length}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Максимальный балл:</span>
+            <span className="font-bold">{totalPoints}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Проходной балл:</span>
+            <span className="font-bold">{formData.passScore}%</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Время на тест:</span>
+            <span className="font-bold">{formData.timeLimit} мин</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Попыток:</span>
+            <span className="font-bold">{formData.attempts}</span>
+          </div>
         </div>
 
         <div className="border-t pt-4 space-y-2">

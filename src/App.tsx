@@ -15,6 +15,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminAnalytics from "./pages/admin/Analytics";
 import AdminTests from "./pages/admin/Tests";
 import AdminTestEditor from "./pages/admin/TestEditor";
+import AdminTestView from "./pages/admin/TestView";
 import AdminRewards from "./pages/admin/Rewards";
 import AdminMedia from "./pages/admin/Media";
 import AdminLogs from "./pages/admin/Logs";
@@ -50,8 +51,9 @@ const App = () => (
             <Route path={ROUTES.ADMIN.USERS} element={<AdminUsers />} />
             <Route path={ROUTES.ADMIN.ANALYTICS} element={<AdminAnalytics />} />
             <Route path={ROUTES.ADMIN.TESTS} element={<AdminTests />} />
-            <Route path="/admin/tests/new" element={<AdminTestEditor />} />
-            <Route path="/admin/tests/:testId/edit" element={<AdminTestEditor />} />
+            <Route path="/admin/tests/edit" element={<AdminTestEditor />} />
+            <Route path="/admin/tests/edit/:testId" element={<AdminTestEditor />} />
+            <Route path="/admin/tests/view/:testId" element={<AdminTestView />} />
             <Route path={ROUTES.ADMIN.REWARDS} element={<AdminRewards />} />
             <Route path={ROUTES.ADMIN.MEDIA} element={<AdminMedia />} />
             <Route path={ROUTES.ADMIN.LOGS} element={<AdminLogs />} />

@@ -28,8 +28,10 @@ interface TestFormData {
   title: string;
   description: string;
   courseId: string;
-  passingScore: number;
+  passScore: number;
   timeLimit: number;
+  attempts: number;
+  status: 'draft' | 'published';
   questions: Question[];
 }
 
@@ -37,8 +39,10 @@ const initialFormData: TestFormData = {
   title: '',
   description: '',
   courseId: '',
-  passingScore: 70,
-  timeLimit: 15,
+  passScore: 70,
+  timeLimit: 30,
+  attempts: 3,
+  status: 'draft',
   questions: [],
 };
 
@@ -182,7 +186,6 @@ export default function TestEditor() {
           </div>
           <Button
             onClick={handleSaveTest}
-            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
             disabled={!formData.title || !formData.courseId || formData.questions.length === 0}
           >
             <Icon name="Save" className="mr-2" size={16} />
@@ -190,16 +193,19 @@ export default function TestEditor() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          <TestInfoForm
-            formData={formData}
-            onInputChange={handleInputChange}
-          />
+        <div className="space-y-6">
+          <div className="grid grid-cols-3 gap-6">
+            <TestInfoForm
+              formData={formData}
+              onInputChange={handleInputChange}
+            />
 
-          <TestSummary
-            questions={formData.questions}
-            totalPoints={totalPoints}
-          />
+            <TestSummary
+              questions={formData.questions}
+              totalPoints={totalPoints}
+              formData={formData}
+            />
+          </div>
 
           <TestQuestionsList
             questions={formData.questions}
