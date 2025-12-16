@@ -31,13 +31,13 @@ export default function AdminUsers() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Управление пользователями</h1>
             <p className="text-gray-600">Отслеживайте прогресс и управляйте доступом</p>
           </div>
-          <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
+          <Button>
             <Icon name="UserPlus" className="mr-2" size={18} />
             Добавить пользователя
           </Button>
         </div>
 
-        <Card className="border-0 shadow-md mb-6">
+        <Card className="border shadow-sm mb-6">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="relative flex-1">
@@ -77,7 +77,7 @@ export default function AdminUsers() {
                     <TableRow key={user.id} className="hover:bg-gray-50">
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full flex items-center justify-center text-white font-semibold">
+                          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
                             {user.name.charAt(0)}
                           </div>
                           <div>

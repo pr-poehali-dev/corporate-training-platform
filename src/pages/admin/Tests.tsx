@@ -52,7 +52,6 @@ export default function Tests() {
           </div>
           <Button 
             onClick={() => navigate('/admin/tests/new')}
-            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
           >
             <Icon name="Plus" className="mr-2" size={18} />
             Создать тест

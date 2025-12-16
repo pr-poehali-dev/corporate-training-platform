@@ -39,11 +39,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <Icon name="GraduationCap" className="text-white" size={20} />
             </div>
             <div>
@@ -51,8 +51,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <p className="text-xs text-gray-500">Управление обучением</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+          <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-sm">
               {user?.name.split(' ').map(n => n[0]).join('') || 'A'}
             </div>
             <div className="flex-1 min-w-0">
@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 key={item.path}
                 onClick={() => navigate(item.path)}
                 variant={isActive ? 'secondary' : 'ghost'}
-                className={`w-full justify-start ${isActive ? 'bg-orange-50 text-orange-600 hover:bg-orange-100' : ''}`}
+                className={`w-full justify-start ${isActive ? 'bg-primary/10 text-primary hover:bg-primary/15' : ''}`}
               >
                 <Icon name={item.icon as any} className="mr-3" size={18} />
                 {item.label}

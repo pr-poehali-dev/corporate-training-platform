@@ -27,7 +27,6 @@ export default function AdminCourses() {
           </div>
           <Button 
             onClick={() => navigate('/admin/courses/new')}
-            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
           >
             <Icon name="Plus" className="mr-2" size={18} />
             Создать курс
@@ -57,7 +56,7 @@ export default function AdminCourses() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredCourses.map((course) => (
-            <Card key={course.id} className="border-0 shadow-md hover:shadow-xl transition-all hover-scale">
+            <Card key={course.id} className="transition-shadow hover:shadow-md">
               <CardContent className="p-6">
                 <div className="flex gap-4 mb-4">
                   <img

@@ -144,7 +144,6 @@ export default function CourseEditor() {
           </div>
           <Button
             onClick={handleSaveCourse}
-            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
             disabled={!formData.title || formData.lessons.length === 0}
           >
             <Icon name="Save" className="mr-2" size={16} />

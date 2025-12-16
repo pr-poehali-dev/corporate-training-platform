@@ -40,17 +40,17 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-2xl mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-2xl mb-4">
             <Icon name="GraduationCap" className="text-white" size={32} />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Платформа обучения</h1>
           <p className="text-gray-600">Корпоративная система развития навыков</p>
         </div>
 
-        <Card className="shadow-xl border-0">
+        <Card className="border shadow-sm">
           <CardHeader>
             <CardTitle>Вход в систему</CardTitle>
             <CardDescription>Введите свои учетные данные для входа</CardDescription>
@@ -98,7 +98,7 @@ export default function Login() {
                 </div>
                 <Button 
                   onClick={handleLogin} 
-                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                  className="w-full bg-primary hover:bg-primary/90"
                   size="lg"
                 >
                   <Icon name="LogIn" className="mr-2" size={18} />
@@ -134,7 +134,7 @@ export default function Login() {
                 </div>
                 <Button 
                   onClick={handleLogin} 
-                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                  className="w-full bg-primary hover:bg-primary/90"
                   size="lg"
                 >
                   <Icon name="ShieldCheck" className="mr-2" size={18} />

@@ -50,10 +50,10 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
-            <Card key={index} className="hover-scale border-0 shadow-md hover:shadow-xl transition-all">
+            <Card key={index} className="transition-shadow hover:shadow-md">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`${stat.color} w-12 h-12 rounded-xl flex items-center justify-center shadow-lg`}>
+                  <div className={`${stat.color} w-12 h-12 rounded-xl flex items-center justify-center`}>
                     <Icon name={stat.icon as any} className="text-white" size={24} />
                   </div>
                 </div>
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-0 shadow-md">
+          <Card className="border shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Icon name="BookOpen" size={20} />
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md">
+          <Card className="border shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Icon name="TrendingUp" size={20} />
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 {mockUsers.filter(u => u.role === 'student').map((user) => (
                   <div key={user.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
                       {user.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">

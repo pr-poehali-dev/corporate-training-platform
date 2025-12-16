@@ -25,7 +25,7 @@ export default function StudentDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="border-0 shadow-md bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+          <Card className="border shadow-sm bg-primary text-primary-foreground">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <Icon name="Trophy" size={32} />
@@ -35,7 +35,7 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+          <Card className="border shadow-sm bg-amber-500 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <Icon name="BookOpen" size={32} />
@@ -45,7 +45,7 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+          <Card className="border shadow-sm bg-green-500 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <Icon name="Award" size={32} />
@@ -58,7 +58,7 @@ export default function StudentDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card className="border shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="BookOpen" size={20} />
@@ -99,7 +99,7 @@ export default function StudentDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md">
+            <Card className="border shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="Sparkles" size={20} />
@@ -109,7 +109,7 @@ export default function StudentDashboard() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {mockCourses.slice(2, 4).map((course) => (
-                    <div key={course.id} className="group p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl hover:shadow-lg transition-all cursor-pointer">
+                    <div key={course.id} className="group p-4 bg-muted rounded-xl hover:shadow-md transition-all cursor-pointer">
                       <img src={course.image} alt={course.title} className="w-full h-32 object-cover rounded-lg mb-3" />
                       <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">{course.title}</h4>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
@@ -133,7 +133,7 @@ export default function StudentDashboard() {
           </div>
 
           <div className="space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card className="border shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="Award" size={20} />
@@ -149,7 +149,7 @@ export default function StudentDashboard() {
                         key={reward.id}
                         className={`p-4 rounded-xl text-center transition-all ${
                           earned
-                            ? 'bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200 hover-scale'
+                            ? 'bg-primary/10 border-2 border-primary/20'
                             : 'bg-gray-100 opacity-50'
                         }`}
                       >
@@ -162,7 +162,7 @@ export default function StudentDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md bg-gradient-to-br from-orange-600 to-amber-600 text-white">
+            <Card className="border shadow-sm bg-primary text-primary-foreground">
               <CardContent className="p-6">
                 <Icon name="Target" size={32} className="mb-4" />
                 <h3 className="font-bold text-lg mb-2">Цель недели</h3>

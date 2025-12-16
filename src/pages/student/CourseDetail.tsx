@@ -48,7 +48,7 @@ export default function CourseDetail() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-0 shadow-md overflow-hidden">
+            <Card className="overflow-hidden">
               <img
                 src={course.image}
                 alt={course.title}
@@ -57,7 +57,7 @@ export default function CourseDetail() {
               <CardContent className="p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Badge variant="secondary">{course.category}</Badge>
-                  <Badge className="bg-gradient-to-r from-orange-500 to-amber-500">
+                  <Badge className="bg-primary text-primary-foreground">
                     {course.level}
                   </Badge>
                 </div>
@@ -66,26 +66,26 @@ export default function CourseDetail() {
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-xl">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600 mb-1">{totalLessons}</div>
+                    <div className="text-2xl font-bold text-primary mb-1">{totalLessons}</div>
                     <div className="text-sm text-gray-600">Уроков</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600 mb-1">{course.duration}</div>
+                    <div className="text-2xl font-bold text-primary mb-1">{course.duration}</div>
                     <div className="text-sm text-gray-600">Минут</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600 mb-1">{course.students}</div>
+                    <div className="text-2xl font-bold text-primary mb-1">{course.students}</div>
                     <div className="text-sm text-gray-600">Студентов</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600 mb-1">{course.rating}</div>
+                    <div className="text-2xl font-bold text-primary mb-1">{course.rating}</div>
                     <div className="text-sm text-gray-600">Рейтинг</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="BookOpen" size={20} />
@@ -166,7 +166,7 @@ export default function CourseDetail() {
           </div>
 
           <div className="space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="TrendingUp" size={20} />
@@ -239,7 +239,7 @@ export default function CourseDetail() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="User" size={20} />
@@ -258,7 +258,7 @@ export default function CourseDetail() {
             </Card>
 
             {userProgress?.earnedRewards && userProgress.earnedRewards.length > 0 && (
-              <Card className="border-0 shadow-md">
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Icon name="Award" size={20} />

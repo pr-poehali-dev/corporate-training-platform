@@ -40,7 +40,7 @@ export default function StudentProfile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="User" size={20} />
@@ -71,7 +71,7 @@ export default function StudentProfile() {
                     <Label htmlFor="department">Отдел</Label>
                     <Input id="department" defaultValue="Отдел продаж" className="mt-1" />
                   </div>
-                  <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600">
+                  <Button>
                     <Icon name="Save" className="mr-2" size={16} />
                     Сохранить изменения
                   </Button>
@@ -79,7 +79,7 @@ export default function StudentProfile() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="Lock" size={20} />
@@ -110,7 +110,7 @@ export default function StudentProfile() {
           </div>
 
           <div className="space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
                   <div className="relative group mb-4">
@@ -121,7 +121,7 @@ export default function StudentProfile() {
                         className="w-24 h-24 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                      <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-3xl font-bold">
                         {user?.name.split(' ').map(n => n[0]).join('') || 'ИП'}
                       </div>
                     )}
@@ -168,7 +168,7 @@ export default function StudentProfile() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Icon name="Award" size={18} />
@@ -190,7 +190,7 @@ export default function StudentProfile() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Icon name="BarChart3" size={18} />
