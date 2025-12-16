@@ -28,6 +28,7 @@ interface CourseFormData {
   instructor: string;
   image: string;
   lessons: Lesson[];
+  testId?: string;
   status: 'draft' | 'published' | 'archived';
   accessType: 'open' | 'closed';
 }
@@ -40,6 +41,7 @@ const initialFormData: CourseFormData = {
   instructor: '',
   image: '',
   lessons: [],
+  testId: undefined,
   status: 'draft',
   accessType: 'open',
 };

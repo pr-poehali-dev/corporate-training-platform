@@ -1,5 +1,7 @@
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import { mockTests } from '@/data/mockData';
 
 interface CourseFormData {
   title: string;
@@ -8,6 +10,7 @@ interface CourseFormData {
   level: 'Начальный' | 'Средний' | 'Продвинутый';
   instructor: string;
   image: string;
+  testId?: string;
   status: 'draft' | 'published' | 'archived';
   accessType: 'open' | 'closed';
 }
@@ -117,6 +120,27 @@ export default function CourseInfoForm({ formData, onInputChange }: CourseInfoFo
               className="mt-2 w-full h-48 object-cover rounded-lg"
             />
           )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Итоговый тест (необязательно)
+          </label>
+          <select
+            value={formData.testId || ''}
+            onChange={(e) => onInputChange('testId', e.target.value || undefined)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="">Без теста</option>
+            {mockTests.filter(t => t.status === 'published').map(test => (
+              <option key={test.id} value={test.id}>
+                {test.title} ({test.questionsCount} вопросов, {test.timeLimit} мин)
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-gray-500">
+            Тест будет отображаться после всех уроков в программе курса
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

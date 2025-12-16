@@ -27,7 +27,6 @@ interface Question {
 interface TestFormData {
   title: string;
   description: string;
-  courseId: string;
   passScore: number;
   timeLimit: number;
   attempts: number;
@@ -38,7 +37,6 @@ interface TestFormData {
 const initialFormData: TestFormData = {
   title: '',
   description: '',
-  courseId: '',
   passScore: 70,
   timeLimit: 30,
   attempts: 3,
@@ -185,7 +183,7 @@ export default function TestEditor() {
           </div>
           <Button
             onClick={handleSaveTest}
-            disabled={!formData.title || !formData.courseId || formData.questions.length === 0}
+            disabled={!formData.title || formData.questions.length === 0}
           >
             <Icon name="Save" className="mr-2" size={16} />
             {isEditMode ? 'Сохранить изменения' : 'Создать тест'}
