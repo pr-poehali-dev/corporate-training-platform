@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import Icon from '@/components/ui/icon';
 
 interface CourseFormData {
   title: string;
