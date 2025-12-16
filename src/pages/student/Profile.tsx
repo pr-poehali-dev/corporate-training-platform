@@ -32,14 +32,13 @@ export default function StudentProfile() {
 
   return (
     <StudentLayout>
-      <div className="animate-fade-in">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Мой профиль</h1>
-          <p className="text-gray-600">Управляйте своей учетной записью и настройками</p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Мой профиль</h1>
+        <p className="text-gray-600">Управляйте своей учетной записью и настройками</p>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2 space-y-5">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -107,9 +106,9 @@ export default function StudentProfile() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+        </div>
 
-          <div className="space-y-6">
+        <div className="space-y-5">
             <Card>
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
@@ -218,7 +217,6 @@ export default function StudentProfile() {
                 </div>
               </CardContent>
             </Card>
-          </div>
         </div>
       </div>
     </StudentLayout>
