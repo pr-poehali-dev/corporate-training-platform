@@ -24,8 +24,8 @@ export default function StudentDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-          <Card className="border shadow-sm bg-primary text-primary-foreground">
-            <CardContent className="p-6">
+          <Card className="border-0 shadow-md bg-gradient-to-br from-orange-500 to-amber-500 text-white">
+            <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <Icon name="Trophy" size={32} />
                 <div className="text-4xl font-bold">{completedCount}</div>
@@ -34,8 +34,8 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-sm bg-amber-500 text-white">
-            <CardContent className="p-6">
+          <Card className="border-0 shadow-md bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+            <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <Icon name="BookOpen" size={32} />
                 <div className="text-4xl font-bold">{inProgressCount}</div>
@@ -44,8 +44,8 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-sm bg-green-500 text-white">
-            <CardContent className="p-6">
+          <Card className="border-0 shadow-md bg-gradient-to-br from-green-500 to-emerald-500 text-white">
+            <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <Icon name="Award" size={32} />
                 <div className="text-4xl font-bold">{earnedRewards.length}</div>
@@ -57,7 +57,7 @@ export default function StudentDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 space-y-5">
-            <Card className="border shadow-sm">
+            <Card className="border-0 shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="BookOpen" size={20} />
@@ -98,7 +98,7 @@ export default function StudentDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border shadow-sm">
+            <Card className="border-0 shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="Sparkles" size={20} />
@@ -132,7 +132,7 @@ export default function StudentDashboard() {
           </div>
 
         <div className="space-y-5">
-            <Card className="border shadow-sm">
+            <Card className="border-0 shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon name="Award" size={20} />
@@ -161,7 +161,7 @@ export default function StudentDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border shadow-sm bg-primary text-primary-foreground">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-purple-500 to-pink-500 text-white">
               <CardContent className="p-5">
                 <Icon name="Target" size={28} className="mb-3" />
                 <h3 className="font-bold text-base mb-2">Цель недели</h3>
