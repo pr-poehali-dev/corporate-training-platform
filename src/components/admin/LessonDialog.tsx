@@ -225,48 +225,6 @@ export default function LessonDialog({
                   )}
                 </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Обложка видео (опционально)
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                  {lesson.imageUrl ? (
-                    <div className="space-y-2">
-                      <img src={lesson.imageUrl} alt="Preview" className="max-h-32 mx-auto rounded" />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onLessonChange('imageUrl', '')}
-                      >
-                        Удалить
-                      </Button>
-                    </div>
-                  ) : (
-                    <>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleFileUpload(file, 'image');
-                        }}
-                        className="hidden"
-                        id="image-upload"
-                      />
-                      <label htmlFor="image-upload">
-                        <Button type="button" variant="ghost" size="sm" asChild>
-                          <span>
-                            <Icon name="Image" size={14} className="mr-2" />
-                            Загрузить изображение
-                          </span>
-                        </Button>
-                      </label>
-                    </>
-                  )}
-                </div>
-              </div>
             </div>
           )}
 
