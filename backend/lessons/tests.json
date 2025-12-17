@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "GET ?courseId=test - без токена",
+      "method": "GET",
+      "path": "/?courseId=test-course-id",
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "POST - без токена",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "courseId": "test-course",
+        "userId": "test-user"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

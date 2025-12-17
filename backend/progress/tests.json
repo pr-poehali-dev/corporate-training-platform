@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "GET ?userId=test - без токена",
+      "method": "GET",
+      "path": "/?userId=test-user-id",
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
