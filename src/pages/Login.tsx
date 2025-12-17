@@ -104,9 +104,6 @@ export default function Login() {
                   <Icon name="LogIn" className="mr-2" size={18} />
                   Войти как обучающийся
                 </Button>
-                <p className="text-xs text-gray-500 text-center">
-                  Демо: student@company.com / password
-                </p>
               </TabsContent>
               
               <TabsContent value="admin" className="space-y-4">
