@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Icon from '@/components/ui/icon';
-import { mockUsers, mockProgress, mockAssignments } from '@/data/mockData';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import UserFilters, { FilterState } from '@/components/admin/UserFilters';
 import UserDetailsModal from '@/components/admin/UserDetailsModal';
 import AddUserModal, { NewUserData } from '@/components/admin/AddUserModal';
 import { User, CourseAssignment } from '@/types';
+import { API_ENDPOINTS, getAuthHeaders } from '@/config/api';
 
 export default function AdminUsers() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,8 +22,59 @@ export default function AdminUsers() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [users, setUsers] = useState(mockUsers);
-  const [assignments, setAssignments] = useState(mockAssignments);
+  const [users, setUsers] = useState<User[]>([]);
+  const [assignments, setAssignments] = useState<CourseAssignment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_ENDPOINTS.USERS, {
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const formattedUsers = data.users.map((u: any) => ({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          role: u.role,
+          position: u.position,
+          department: u.department,
+          phone: u.phone,
+          avatar: u.avatar,
+          isActive: u.isActive,
+          registrationDate: new Date(u.registrationDate).toLocaleDateString('ru-RU'),
+          lastActive: formatLastActive(u.lastActive),
+        }));
+        setUsers(formattedUsers);
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatLastActive = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Только что';
+    if (diffMins < 60) return `${diffMins} минут назад`;
+    if (diffHours < 24) return `${diffHours} часов назад`;
+    if (diffDays < 30) return `${diffDays} дней назад`;
+    return `${Math.floor(diffDays / 30)} месяц назад`;
+  };
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -43,9 +94,7 @@ export default function AdminUsers() {
   });
 
   const getUserProgress = (userId: string) => {
-    const progress = mockProgress.filter((p) => p.userId === userId);
-    const completed = progress.filter((p) => p.completed).length;
-    return { total: progress.length, completed };
+    return { total: 0, completed: 0 };
   };
 
   const handleViewDetails = (user: User) => {
@@ -53,70 +102,126 @@ export default function AdminUsers() {
     setShowDetailsModal(true);
   };
 
-  const handleEditRole = (userId: string, newRole: 'admin' | 'student') => {
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-    );
-    setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, role: newRole } : prev));
-  };
+  const handleEditRole = async (userId: string, newRole: 'admin' | 'student') => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.USERS}?id=${userId}&action=role`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ role: newRole }),
+      });
 
-  const handleAddUser = (userData: NewUserData) => {
-    const newUser: User = {
-      id: Date.now().toString(),
-      name: userData.name,
-      email: userData.email,
-      role: userData.role,
-      registrationDate: new Date().toLocaleDateString('ru-RU'),
-      lastActive: 'Только что',
-    };
-    setUsers([...users, newUser]);
-    console.log(`Пользователь ${userData.name} создан с паролем: ${userData.password}`);
-  };
-
-  const handleEditPassword = (userId: string, newPassword: string) => {
-    const user = users.find(u => u.id === userId);
-    if (user) {
-      console.log(`Пароль для ${user.name} изменен на: ${newPassword}`);
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+        );
+        setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, role: newRole } : prev));
+      }
+    } catch (error) {
+      console.error('Error updating role:', error);
     }
   };
 
-  const handleEditUser = (userId: string, userData: Partial<User>) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.id === userId ? { ...u, ...userData } : u))
-    );
-    setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, ...userData } : prev));
-  };
+  const handleAddUser = async (userData: NewUserData) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.USERS, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          email: userData.email,
+          name: userData.name,
+          role: userData.role,
+          password: userData.password,
+          position: userData.position,
+          department: userData.department,
+          phone: userData.phone,
+        }),
+      });
 
-  const handleToggleActive = (userId: string, isActive: boolean) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.id === userId ? { ...u, isActive } : u))
-    );
-    setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, isActive } : prev));
-    const user = users.find(u => u.id === userId);
-    if (user) {
-      console.log(`Пользователь ${user.name} ${isActive ? 'включен' : 'отключен'}`);
+      if (response.ok) {
+        await loadUsers();
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
     }
   };
 
-  const handleAssignCourse = (userId: string, courseId: string) => {
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    const formattedDate = `${day}.${month}.${year}`;
-    
-    const newAssignment: CourseAssignment = {
-      id: `a${Date.now()}`,
-      courseId,
-      userId,
-      assignedBy: '1',
-      assignedAt: formattedDate,
-      status: 'assigned',
-    };
-    setAssignments([...assignments, newAssignment]);
+  const handleEditPassword = async (userId: string, newPassword: string) => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.USERS}?id=${userId}&action=password`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ password: newPassword }),
+      });
+
+      if (response.ok) {
+        console.log('Пароль успешно изменен');
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+    }
   };
 
-  const handleRemoveAssignment = (assignmentId: string) => {
+  const handleEditUser = async (userId: string, userData: Partial<User>) => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.USERS}?id=${userId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          name: userData.name,
+          position: userData.position,
+          department: userData.department,
+          phone: userData.phone,
+          avatar: userData.avatar,
+        }),
+      });
+
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.map((u) => (u.id === userId ? { ...u, ...userData } : u))
+        );
+        setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, ...userData } : prev));
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
+  const handleToggleActive = async (userId: string, isActive: boolean) => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.USERS}?id=${userId}&action=toggle`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ isActive }),
+      });
+
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.map((u) => (u.id === userId ? { ...u, isActive } : u))
+        );
+        setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, isActive } : prev));
+      }
+    } catch (error) {
+      console.error('Error toggling user status:', error);
+    }
+  };
+
+  const handleAssignCourse = async (userId: string, courseId: string) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.ASSIGNMENTS, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ userId, courseId }),
+      });
+
+      if (response.ok) {
+        console.log('Курс назначен');
+      }
+    } catch (error) {
+      console.error('Error assigning course:', error);
+    }
+  };
+
+  const handleRemoveAssignment = async (assignmentId: string) => {
     setAssignments(assignments.filter(a => a.id !== assignmentId));
   };
 
@@ -124,6 +229,16 @@ export default function AdminUsers() {
   const activeUsers = users.filter(
     (u) => u.lastActive.includes('часов') || u.lastActive.includes('минут')
   );
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <Icon name="Loader2" className="animate-spin" size={32} />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -204,17 +319,26 @@ export default function AdminUsers() {
                               user.lastActive.includes('часов') ||
                               user.lastActive.includes('минут')
                                 ? 'bg-green-500'
-                                : 'bg-gray-400'
+                                : 'bg-gray-300'
                             }`}
-                          ></div>
-                          <span className="text-gray-600">{user.lastActive}</span>
+                          />
+                          <span className="text-sm text-gray-600">
+                            {user.lastActive}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Icon name="BookOpen" size={14} className="text-gray-400" />
-                          <span className="text-sm font-medium text-gray-900">
-                            {progress.completed}/{progress.total} курсов
+                          <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-[100px]">
+                            <div
+                              className="bg-primary h-2 rounded-full"
+                              style={{
+                                width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
+                              }}
+                            />
+                          </div>
+                          <span className="text-sm text-gray-600 whitespace-nowrap">
+                            {progress.completed}/{progress.total}
                           </span>
                         </div>
                       </TableCell>
@@ -224,8 +348,7 @@ export default function AdminUsers() {
                           size="sm"
                           onClick={() => handleViewDetails(user)}
                         >
-                          <Icon name="Eye" className="mr-1" size={14} />
-                          Детали
+                          <Icon name="Eye" size={18} />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -233,81 +356,30 @@ export default function AdminUsers() {
                 })}
               </TableBody>
             </Table>
-
-            {filteredUsers.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                <Icon name="Users" size={48} className="mx-auto mb-4 opacity-30" />
-                <p>Пользователи не найдены</p>
-              </div>
-            )}
           </CardContent>
         </Card>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <Card className="border shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <Icon name="Users" className="text-primary" size={24} />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">{students.length}</div>
-                  <div className="text-sm text-gray-600">Всего обучающихся</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <Icon name="TrendingUp" className="text-green-600" size={24} />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {activeUsers.length}
-                  </div>
-                  <div className="text-sm text-gray-600">Активных пользователей</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <Icon name="Award" className="text-blue-600" size={24} />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {mockProgress.filter((p) => p.completed).length}
-                  </div>
-                  <div className="text-sm text-gray-600">Курсов завершено</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
 
-      <UserDetailsModal
-        show={showDetailsModal}
-        user={selectedUser}
-        onClose={() => setShowDetailsModal(false)}
-        onEditRole={handleEditRole}
-        onEditPassword={handleEditPassword}
-        onEditUser={handleEditUser}
-        onToggleActive={handleToggleActive}
-        userProgress={selectedUser ? getUserProgress(selectedUser.id) : { total: 0, completed: 0 }}
-        onAssignCourse={handleAssignCourse}
-        onRemoveAssignment={handleRemoveAssignment}
-        assignments={assignments}
-      />
+      {selectedUser && (
+        <UserDetailsModal
+          user={selectedUser}
+          open={showDetailsModal}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedUser(null);
+          }}
+          onEditRole={handleEditRole}
+          onEditPassword={handleEditPassword}
+          onEditUser={handleEditUser}
+          onToggleActive={handleToggleActive}
+          onAssignCourse={handleAssignCourse}
+          onRemoveAssignment={handleRemoveAssignment}
+          assignments={assignments}
+        />
+      )}
 
       <AddUserModal
-        show={showAddModal}
+        open={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddUser}
       />
