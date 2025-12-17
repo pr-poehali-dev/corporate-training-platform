@@ -1,9 +1,24 @@
 {
   "tests": [
     {
-      "name": "GET ?courseId=test - без токена",
+      "name": "POST - без токена",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "courseId": "test-course",
+        "name": "Тестовый тест",
+        "test_type": "pre"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "GET ?courseId=x - без токена",
       "method": "GET",
-      "path": "/?courseId=test-course-id",
+      "path": "/?courseId=test-course",
       "expectedStatus": 401,
       "expectedBody": {
         "error": "string"
