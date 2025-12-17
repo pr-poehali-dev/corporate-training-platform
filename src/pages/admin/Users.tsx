@@ -80,6 +80,13 @@ export default function AdminUsers() {
     }
   };
 
+  const handleEditUser = (userId: string, userData: Partial<User>) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.id === userId ? { ...u, ...userData } : u))
+    );
+    setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, ...userData } : prev));
+  };
+
   const handleAssignCourse = (userId: string, courseId: string) => {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -270,6 +277,7 @@ export default function AdminUsers() {
         onClose={() => setShowDetailsModal(false)}
         onEditRole={handleEditRole}
         onEditPassword={handleEditPassword}
+        onEditUser={handleEditUser}
         userProgress={selectedUser ? getUserProgress(selectedUser.id) : { total: 0, completed: 0 }}
         onAssignCourse={handleAssignCourse}
         onRemoveAssignment={handleRemoveAssignment}

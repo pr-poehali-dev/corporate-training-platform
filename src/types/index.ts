@@ -7,6 +7,10 @@ export interface User {
   role: UserRole;
   registrationDate: string;
   lastActive: string;
+  position?: string;
+  department?: string;
+  phone?: string;
+  avatar?: string;
 }
 
 export interface Course {
