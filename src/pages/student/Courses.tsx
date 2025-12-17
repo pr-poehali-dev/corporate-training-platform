@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 
 export default function StudentCourses() {
-  const [filter, setFilter] = useState<'all' | 'inProgress' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'notStarted' | 'inProgress' | 'completed'>('all');
   const navigate = useNavigate();
   const userId = '2';
 
@@ -25,8 +25,11 @@ export default function StudentCourses() {
     return course.accessType === 'open' || assignedCourseIds.has(course.id);
   });
 
+  const notStartedCount = availableCourses.filter(c => !progressMap.has(c.id)).length;
+
   const filteredCourses = availableCourses.filter(course => {
     const progress = progressMap.get(course.id);
+    if (filter === 'notStarted') return !progress;
     if (filter === 'inProgress') return progress && !progress.completed && progress.completedLessons > 0;
     if (filter === 'completed') return progress?.completed;
     return true;
@@ -46,6 +49,13 @@ export default function StudentCourses() {
           size="sm"
         >
           Все ({availableCourses.length})
+        </Button>
+        <Button
+          variant={filter === 'notStarted' ? 'default' : 'outline'}
+          onClick={() => setFilter('notStarted')}
+          size="sm"
+        >
+          Не начаты ({notStartedCount})
         </Button>
         <Button
           variant={filter === 'inProgress' ? 'default' : 'outline'}
