@@ -164,7 +164,7 @@ export default function LessonDialog({
                 className="w-4 h-4 text-orange-500 rounded focus:ring-orange-500"
               />
               <span className="text-sm text-gray-700">
-                Требуется пройти предыдущий урок
+                Урок обязателен к прохождению для открытия следующих уроков
               </span>
             </label>
           </div>
