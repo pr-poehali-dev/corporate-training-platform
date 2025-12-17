@@ -14,6 +14,7 @@ interface UserDetailsModalProps {
   onEditRole: (userId: string, newRole: 'admin' | 'student') => void;
   onEditPassword: (userId: string, newPassword: string) => void;
   onEditUser: (userId: string, userData: Partial<User>) => void;
+  onToggleActive: (userId: string, isActive: boolean) => void;
   userProgress: { total: number; completed: number };
   onAssignCourse?: (userId: string, courseId: string) => void;
   onRemoveAssignment?: (assignmentId: string) => void;
@@ -27,6 +28,7 @@ export default function UserDetailsModal({
   onEditRole,
   onEditPassword,
   onEditUser,
+  onToggleActive,
   userProgress,
   onAssignCourse,
   onRemoveAssignment,
@@ -65,7 +67,8 @@ export default function UserDetailsModal({
           <UserAccessManagement 
             user={user} 
             onEditRole={onEditRole} 
-            onEditPassword={onEditPassword} 
+            onEditPassword={onEditPassword}
+            onToggleActive={onToggleActive}
           />
 
           <UserCoursesManagement 

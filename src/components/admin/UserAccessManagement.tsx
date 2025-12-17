@@ -7,12 +7,14 @@ interface UserAccessManagementProps {
   user: User;
   onEditRole: (userId: string, newRole: 'admin' | 'student') => void;
   onEditPassword: (userId: string, newPassword: string) => void;
+  onToggleActive: (userId: string, isActive: boolean) => void;
 }
 
 export default function UserAccessManagement({ 
   user, 
   onEditRole, 
-  onEditPassword 
+  onEditPassword,
+  onToggleActive
 }: UserAccessManagementProps) {
   const [newPassword, setNewPassword] = useState('');
   const [showPasswordEdit, setShowPasswordEdit] = useState(false);
@@ -121,6 +123,23 @@ export default function UserAccessManagement({
               )}
             </div>
           )}
+        </div>
+
+        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <div className="font-medium">Статус учетной записи</div>
+            <div className="text-sm text-gray-500">
+              {user.isActive !== false ? 'Пользователь может войти в систему' : 'Пользователь не может войти в систему'}
+            </div>
+          </div>
+          <Button
+            variant={user.isActive !== false ? 'outline' : 'default'}
+            size="sm"
+            onClick={() => onToggleActive(user.id, user.isActive === false)}
+          >
+            <Icon name={user.isActive !== false ? 'UserX' : 'UserCheck'} className="mr-2" size={14} />
+            {user.isActive !== false ? 'Отключить' : 'Включить'}
+          </Button>
         </div>
       </div>
     </div>

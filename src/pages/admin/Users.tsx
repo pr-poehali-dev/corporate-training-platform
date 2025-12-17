@@ -87,6 +87,17 @@ export default function AdminUsers() {
     setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, ...userData } : prev));
   };
 
+  const handleToggleActive = (userId: string, isActive: boolean) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.id === userId ? { ...u, isActive } : u))
+    );
+    setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, isActive } : prev));
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      console.log(`Пользователь ${user.name} ${isActive ? 'включен' : 'отключен'}`);
+    }
+  };
+
   const handleAssignCourse = (userId: string, courseId: string) => {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -155,14 +166,24 @@ export default function AdminUsers() {
                 {filteredUsers.map((user) => {
                   const progress = getUserProgress(user.id);
                   return (
-                    <TableRow key={user.id} className="hover:bg-gray-50">
+                    <TableRow key={user.id} className={`hover:bg-gray-50 ${user.isActive === false ? 'opacity-50' : ''}`}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
+                          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold relative">
                             {user.name.charAt(0)}
+                            {user.isActive === false && (
+                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
+                                <Icon name="Ban" size={10} className="text-white" />
+                              </div>
+                            )}
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900">{user.name}</div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-gray-900">{user.name}</span>
+                              {user.isActive === false && (
+                                <Badge variant="destructive" className="text-xs">Отключен</Badge>
+                              )}
+                            </div>
                             <Badge
                               variant={user.role === 'admin' ? 'default' : 'outline'}
                               className="mt-1"
@@ -278,6 +299,7 @@ export default function AdminUsers() {
         onEditRole={handleEditRole}
         onEditPassword={handleEditPassword}
         onEditUser={handleEditUser}
+        onToggleActive={handleToggleActive}
         userProgress={selectedUser ? getUserProgress(selectedUser.id) : { total: 0, completed: 0 }}
         onAssignCourse={handleAssignCourse}
         onRemoveAssignment={handleRemoveAssignment}

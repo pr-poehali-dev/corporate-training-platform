@@ -258,6 +258,7 @@ export const mockUsers: User[] = [
     role: 'admin',
     registrationDate: '2024-01-15',
     lastActive: '2024-12-15',
+    isActive: true,
   },
   {
     id: '2',
@@ -266,6 +267,7 @@ export const mockUsers: User[] = [
     role: 'student',
     registrationDate: '2024-02-20',
     lastActive: '2024-12-14',
+    isActive: true,
   },
   {
     id: '3',
@@ -274,6 +276,7 @@ export const mockUsers: User[] = [
     role: 'student',
     registrationDate: '2024-03-10',
     lastActive: '2024-12-13',
+    isActive: true,
   },
 ];
 
