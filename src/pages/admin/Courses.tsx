@@ -7,6 +7,7 @@ import { getCategoryIcon, getCategoryGradient } from '@/utils/categoryIcons';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS, getAuthHeaders } from '@/config/api';
+import AssignStudentsModal from '@/components/admin/AssignStudentsModal';
 
 interface Course {
   id: string;
@@ -27,6 +28,8 @@ export default function AdminCourses() {
   const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   useEffect(() => {
     loadCourses();
@@ -48,6 +51,20 @@ export default function AdminCourses() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAssignStudents = (course: Course) => {
+    setSelectedCourse(course);
+    setShowAssignModal(true);
+  };
+
+  const handleCloseAssignModal = () => {
+    setShowAssignModal(false);
+    setSelectedCourse(null);
+  };
+
+  const handleAssignmentComplete = () => {
+    loadCourses();
   };
 
   const filteredCourses = courses.filter(course => {
@@ -162,14 +179,14 @@ export default function AdminCourses() {
                     {course.passScore}%
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => navigate(`/admin/courses/edit/${course.id}`)}
                   >
                     <Icon name="Edit" className="mr-1" size={14} />
-                    Редактировать
+                    Ред.
                   </Button>
                   <Button
                     variant="outline" 
@@ -177,13 +194,32 @@ export default function AdminCourses() {
                     onClick={() => navigate(`/admin/courses/view/${course.id}`)}
                   >
                     <Icon name="Eye" className="mr-1" size={14} />
-                    Просмотр
+                    Вид
+                  </Button>
+                  <Button
+                    variant="default" 
+                    size="sm"
+                    onClick={() => handleAssignStudents(course)}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Icon name="UserPlus" className="mr-1" size={14} />
+                    Наз.
                   </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+      )}
+
+      {selectedCourse && (
+        <AssignStudentsModal
+          show={showAssignModal}
+          courseId={selectedCourse.id}
+          courseTitle={selectedCourse.title}
+          onClose={handleCloseAssignModal}
+          onAssigned={handleAssignmentComplete}
+        />
       )}
     </AdminLayout>
   );

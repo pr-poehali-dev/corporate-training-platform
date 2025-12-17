@@ -59,7 +59,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     POST - назначить курс студенту
     GET ?userId=x - все назначения студента
     GET ?courseId=x - все назначения курса
-    DELETE ?id=x - удалить назначение
+    DELETE ?courseId=x&userId=x - отменить назначение
+    DELETE ?id=x - удалить назначение по ID
     '''
     method: str = event.get('httpMethod', 'GET')
     
@@ -79,8 +80,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     headers = event.get('headers', {})
     query_params = event.get('queryStringParameters', {}) or {}
     assignment_id = query_params.get('id')
-    user_id = query_params.get('userId')
-    course_id = query_params.get('courseId')
+    user_id_param = query_params.get('userId')
+    course_id_param = query_params.get('courseId')
     
     payload, admin_error = require_admin(headers)
     if admin_error:
@@ -94,11 +95,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     conn = get_db_connection()
     cur = conn.cursor()
     
-    if method == 'GET' and user_id:
+    if method == 'GET' and user_id_param:
         cur.execute(
             "SELECT id, course_id, user_id, assigned_by, assigned_at, due_date, status, notes "
             "FROM course_assignments WHERE user_id = %s ORDER BY assigned_at DESC",
-            (user_id,)
+            (user_id_param,)
         )
         assignments = cur.fetchall()
         assignments_list = [format_assignment_response(a) for a in assignments]
@@ -113,11 +114,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    if method == 'GET' and course_id:
+    if method == 'GET' and course_id_param:
         cur.execute(
             "SELECT id, course_id, user_id, assigned_by, assigned_at, due_date, status, notes "
             "FROM course_assignments WHERE course_id = %s ORDER BY assigned_at DESC",
-            (course_id,)
+            (course_id_param,)
         )
         assignments = cur.fetchall()
         assignments_list = [format_assignment_response(a) for a in assignments]
@@ -179,6 +180,66 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 201,
             'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
             'body': json.dumps({'assignment': assignment_data}, ensure_ascii=False),
+            'isBase64Encoded': False
+        }
+    
+    if method == 'DELETE' and course_id_param and user_id_param:
+        cur.execute(
+            "DELETE FROM course_progress WHERE course_id = %s AND user_id = %s",
+            (course_id_param, user_id_param)
+        )
+        
+        cur.execute(
+            "DELETE FROM course_assignments WHERE course_id = %s AND user_id = %s",
+            (course_id_param, user_id_param)
+        )
+        conn.commit()
+        
+        cur.close()
+        conn.close()
+        
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'message': 'Назначение отменено'}, ensure_ascii=False),
+            'isBase64Encoded': False
+        }
+    
+    if method == 'DELETE' and assignment_id:
+        cur.execute(
+            "SELECT course_id, user_id FROM course_assignments WHERE id = %s",
+            (assignment_id,)
+        )
+        assignment = cur.fetchone()
+        
+        if not assignment:
+            cur.close()
+            conn.close()
+            return {
+                'statusCode': 404,
+                'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': 'Назначение не найдено'}, ensure_ascii=False),
+                'isBase64Encoded': False
+            }
+        
+        cur.execute(
+            "DELETE FROM course_progress WHERE course_id = %s AND user_id = %s",
+            (assignment[0], assignment[1])
+        )
+        
+        cur.execute(
+            "DELETE FROM course_assignments WHERE id = %s",
+            (assignment_id,)
+        )
+        conn.commit()
+        
+        cur.close()
+        conn.close()
+        
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'message': 'Назначение удалено'}, ensure_ascii=False),
             'isBase64Encoded': False
         }
     
