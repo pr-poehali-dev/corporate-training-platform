@@ -2,7 +2,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import RichTextEditor from './RichTextEditor';
-import MediaManager, { MediaFile } from './MediaManager';
+import { mockTests } from '@/data/mockData';
+
+interface LessonMaterial {
+  id: string;
+  title: string;
+  type: 'pdf' | 'doc' | 'link' | 'video';
+  url: string;
+}
 
 interface Lesson {
   id: string;
@@ -13,6 +20,10 @@ interface Lesson {
   videoUrl?: string;
   testId?: string;
   order: number;
+  description?: string;
+  materials?: LessonMaterial[];
+  requiresPrevious?: boolean;
+  imageUrl?: string;
 }
 
 interface LessonDialogProps {
@@ -30,119 +41,237 @@ export default function LessonDialog({
   onCancel,
   onLessonChange,
 }: LessonDialogProps) {
-  const [showMediaManager, setShowMediaManager] = useState(false);
-  const [mediaInsertType, setMediaInsertType] = useState<'image' | 'video' | 'pdf'>('image');
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   if (!show || !lesson) return null;
 
-  const handleInsertMedia = (type: 'image' | 'video' | 'pdf') => {
-    setMediaInsertType(type);
-    setShowMediaManager(true);
+  const handleFileUpload = async (file: File, type: 'video' | 'image' | 'material') => {
+    setUploadingFile(true);
+    
+    const fakeUrl = URL.createObjectURL(file);
+    
+    setTimeout(() => {
+      if (type === 'video') {
+        onLessonChange('videoUrl', fakeUrl);
+      } else if (type === 'image') {
+        onLessonChange('imageUrl', fakeUrl);
+      } else if (type === 'material') {
+        const newMaterial: LessonMaterial = {
+          id: Date.now().toString(),
+          title: file.name,
+          type: file.type.includes('pdf') ? 'pdf' : 'doc',
+          url: fakeUrl,
+        };
+        const materials = lesson.materials || [];
+        onLessonChange('materials', [...materials, newMaterial]);
+      }
+      setUploadingFile(false);
+    }, 500);
   };
 
-  const handleMediaSelect = (file: MediaFile) => {
-    const currentContent = lesson.content || '';
-    let insertText = '';
+  const handleRemoveMaterial = (materialId: string) => {
+    const materials = lesson.materials?.filter(m => m.id !== materialId) || [];
+    onLessonChange('materials', materials);
+  };
 
-    switch (file.type) {
-      case 'image':
-        insertText = `\n![${file.name}](${file.url})\n`;
-        break;
-      case 'video':
-        insertText = `\n[Видео: ${file.name}](${file.url})\n`;
-        break;
-      case 'pdf':
-        insertText = `\n[PDF: ${file.name}](${file.url})\n`;
-        break;
+  const handleAddLink = () => {
+    const url = prompt('Введите URL ссылки:');
+    const title = prompt('Введите название ссылки:');
+    if (url && title) {
+      const newMaterial: LessonMaterial = {
+        id: Date.now().toString(),
+        title,
+        type: 'link',
+        url,
+      };
+      const materials = lesson.materials || [];
+      onLessonChange('materials', [...materials, newMaterial]);
     }
-
-    onLessonChange('content', currentContent + insertText);
-    setShowMediaManager(false);
   };
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b sticky top-0 bg-white z-10">
-            <h3 className="text-xl font-bold">
-              {lesson.id ? 'Редактировать урок' : 'Новый урок'}
-            </h3>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b sticky top-0 bg-white z-10">
+          <h3 className="text-xl font-bold">
+            {lesson.id ? 'Редактировать урок' : 'Новый урок'}
+          </h3>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Название урока *
+            </label>
+            <input
+              type="text"
+              value={lesson.title}
+              onChange={(e) => onLessonChange('title', e.target.value)}
+              placeholder="Введение в React"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
           </div>
 
-          <div className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Краткое описание
+            </label>
+            <textarea
+              value={lesson.description || ''}
+              onChange={(e) => onLessonChange('description', e.target.value)}
+              placeholder="О чем этот урок..."
+              rows={2}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Название урока *
+                Тип урока
+              </label>
+              <select
+                value={lesson.type}
+                onChange={(e) => onLessonChange('type', e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="video">Видео</option>
+                <option value="text">Текст</option>
+                <option value="test">Тест</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Длительность (мин)
               </label>
               <input
-                type="text"
-                value={lesson.title}
-                onChange={(e) => onLessonChange('title', e.target.value)}
-                placeholder="Введение в React"
+                type="number"
+                value={lesson.duration}
+                onChange={(e) => onLessonChange('duration', parseInt(e.target.value) || 0)}
+                min="1"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={lesson.requiresPrevious || false}
+                onChange={(e) => onLessonChange('requiresPrevious', e.target.checked)}
+                className="w-4 h-4 text-orange-500 rounded focus:ring-orange-500"
+              />
+              <span className="text-sm text-gray-700">
+                Требуется пройти предыдущий урок
+              </span>
+            </label>
+          </div>
+
+          {lesson.type === 'video' && (
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Тип урока
+                  Видео урока
                 </label>
-                <select
-                  value={lesson.type}
-                  onChange={(e) => onLessonChange('type', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="video">Видео</option>
-                  <option value="text">Текст</option>
-                  <option value="test">Тест</option>
-                </select>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  {lesson.videoUrl ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-2 text-green-600">
+                        <Icon name="CheckCircle" size={20} />
+                        <span className="text-sm font-medium">Видео загружено</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onLessonChange('videoUrl', '')}
+                      >
+                        Заменить видео
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Icon name="Upload" size={32} className="mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600 mb-2">Загрузите видеофайл или вставьте ссылку</p>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file, 'video');
+                        }}
+                        className="hidden"
+                        id="video-upload"
+                      />
+                      <label htmlFor="video-upload">
+                        <Button type="button" variant="outline" size="sm" asChild>
+                          <span>
+                            <Icon name="Upload" size={14} className="mr-2" />
+                            Загрузить файл
+                          </span>
+                        </Button>
+                      </label>
+                      <div className="mt-3">
+                        <input
+                          type="text"
+                          placeholder="или вставьте ссылку YouTube/Vimeo"
+                          onChange={(e) => onLessonChange('videoUrl', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Длительность (мин)
+                  Обложка видео (опционально)
                 </label>
-                <input
-                  type="number"
-                  value={lesson.duration}
-                  onChange={(e) => onLessonChange('duration', parseInt(e.target.value) || 0)}
-                  min="1"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                />
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                  {lesson.imageUrl ? (
+                    <div className="space-y-2">
+                      <img src={lesson.imageUrl} alt="Preview" className="max-h-32 mx-auto rounded" />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onLessonChange('imageUrl', '')}
+                      >
+                        Удалить
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file, 'image');
+                        }}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <label htmlFor="image-upload">
+                        <Button type="button" variant="ghost" size="sm" asChild>
+                          <span>
+                            <Icon name="Image" size={14} className="mr-2" />
+                            Загрузить изображение
+                          </span>
+                        </Button>
+                      </label>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
+          )}
 
-            {lesson.type === 'video' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL видео
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={lesson.videoUrl || ''}
-                    onChange={(e) => onLessonChange('videoUrl', e.target.value)}
-                    placeholder="https://youtube.com/watch?v=... или https://vimeo.com/..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => handleInsertMedia('video')}
-                  >
-                    <Icon name="Video" size={16} className="mr-2" />
-                    Выбрать из библиотеки
-                  </Button>
-                </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  Поддерживаются YouTube, Vimeo и прямые ссылки на видео
-                </p>
-              </div>
-            )}
-
-            {lesson.type === 'text' && (
+          {lesson.type === 'text' && (
+            <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Содержание урока
@@ -150,54 +279,110 @@ export default function LessonDialog({
                 <RichTextEditor
                   value={lesson.content || ''}
                   onChange={(value) => onLessonChange('content', value)}
-                  onInsertImage={() => handleInsertMedia('image')}
-                  onInsertVideo={() => handleInsertMedia('video')}
-                  onInsertPDF={() => handleInsertMedia('pdf')}
                 />
                 <p className="text-sm text-gray-500 mt-2">
-                  Используйте Markdown для форматирования текста. Вы можете добавлять
-                  изображения, видео и PDF-документы.
+                  Используйте Markdown для форматирования текста
                 </p>
               </div>
-            )}
+            </>
+          )}
 
-            {lesson.type === 'test' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID теста
-                </label>
+          {lesson.type === 'test' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Выберите тест
+              </label>
+              <select
+                value={lesson.testId || ''}
+                onChange={(e) => onLessonChange('testId', e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">-- Выберите тест --</option>
+                {mockTests.filter(t => !t.isFinal).map(test => (
+                  <option key={test.id} value={test.id}>
+                    {test.title} ({test.questionsCount} вопросов)
+                  </option>
+                ))}
+              </select>
+              <p className="text-sm text-gray-500 mt-1">
+                Отображаются только тесты к урокам (не итоговые)
+              </p>
+            </div>
+          )}
+
+          <div className="border-t pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-gray-700">
+                Справочные материалы
+              </label>
+              <div className="flex gap-2">
                 <input
-                  type="text"
-                  value={lesson.testId || ''}
-                  onChange={(e) => onLessonChange('testId', e.target.value)}
-                  placeholder="test-123"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file, 'material');
+                  }}
+                  className="hidden"
+                  id="material-upload"
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Укажите ID теста из раздела "Тесты"
-                </p>
+                <label htmlFor="material-upload">
+                  <Button type="button" variant="outline" size="sm" asChild disabled={uploadingFile}>
+                    <span>
+                      <Icon name="Paperclip" size={14} className="mr-1" />
+                      Файл
+                    </span>
+                  </Button>
+                </label>
+                <Button type="button" variant="outline" size="sm" onClick={handleAddLink}>
+                  <Icon name="Link" size={14} className="mr-1" />
+                  Ссылка
+                </Button>
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="p-6 border-t flex justify-end gap-3 sticky bottom-0 bg-white">
-            <Button variant="outline" onClick={onCancel}>
-              Отмена
-            </Button>
-            <Button onClick={onSave} disabled={!lesson.title}>
-              <Icon name="Save" className="mr-2" size={16} />
-              Сохранить урок
-            </Button>
+            {lesson.materials && lesson.materials.length > 0 ? (
+              <div className="space-y-2">
+                {lesson.materials.map((material) => (
+                  <div key={material.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Icon 
+                        name={material.type === 'pdf' ? 'FileText' : material.type === 'link' ? 'Link' : 'File'} 
+                        size={16} 
+                        className="text-gray-400"
+                      />
+                      <span className="text-sm font-medium">{material.title}</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveMaterial(material.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Icon name="X" size={14} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-3">
+                Нет прикрепленных материалов
+              </p>
+            )}
           </div>
         </div>
-      </div>
 
-      <MediaManager
-        show={showMediaManager}
-        onClose={() => setShowMediaManager(false)}
-        onSelect={handleMediaSelect}
-        allowedTypes={[mediaInsertType]}
-      />
-    </>
+        <div className="p-6 border-t flex justify-end gap-3 sticky bottom-0 bg-white">
+          <Button variant="outline" onClick={onCancel}>
+            Отмена
+          </Button>
+          <Button onClick={onSave} disabled={!lesson.title || uploadingFile}>
+            <Icon name="Save" className="mr-2" size={16} />
+            Сохранить урок
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

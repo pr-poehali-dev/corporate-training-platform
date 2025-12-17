@@ -13,6 +13,7 @@ interface CourseFormData {
   testId?: string;
   status: 'draft' | 'published' | 'archived';
   accessType: 'open' | 'closed';
+  sequenceType: 'linear' | 'free';
 }
 
 interface CourseInfoFormProps {
@@ -124,22 +125,22 @@ export default function CourseInfoForm({ formData, onInputChange }: CourseInfoFo
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Итоговый тест (необязательно)
+            Итоговый тест курса (необязательно)
           </label>
           <select
             value={formData.testId || ''}
             onChange={(e) => onInputChange('testId', e.target.value || undefined)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
-            <option value="">Без теста</option>
-            {mockTests.filter(t => t.status === 'published').map(test => (
+            <option value="">Без итогового теста</option>
+            {mockTests.filter(t => t.isFinal && t.status === 'published').map(test => (
               <option key={test.id} value={test.id}>
                 {test.title} ({test.questionsCount} вопросов, {test.timeLimit} мин)
               </option>
             ))}
           </select>
           <p className="mt-1 text-xs text-gray-500">
-            Тест будет отображаться после всех уроков в программе курса
+            Отображаются только итоговые тесты. Тесты к урокам добавляются при создании урока типа "Тест".
           </p>
         </div>
 
@@ -179,6 +180,41 @@ export default function CourseInfoForm({ formData, onInputChange }: CourseInfoFo
           </div>
         </div>
 
+        <div className="border-t pt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Последовательность прохождения
+          </label>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-lg hover:bg-gray-50">
+              <input
+                type="radio"
+                name="sequenceType"
+                value="linear"
+                checked={formData.sequenceType === 'linear'}
+                onChange={(e) => onInputChange('sequenceType', e.target.value)}
+                className="w-4 h-4 text-orange-500"
+              />
+              <div>
+                <div className="font-medium text-sm">Линейная</div>
+                <div className="text-xs text-gray-500">Студенты проходят уроки строго по порядку</div>
+              </div>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-lg hover:bg-gray-50">
+              <input
+                type="radio"
+                name="sequenceType"
+                value="free"
+                checked={formData.sequenceType === 'free'}
+                onChange={(e) => onInputChange('sequenceType', e.target.value)}
+                className="w-4 h-4 text-orange-500"
+              />
+              <div>
+                <div className="font-medium text-sm">Свободная</div>
+                <div className="text-xs text-gray-500">Студенты могут выбирать любой урок</div>
+              </div>
+            </label>
+          </div>
+        </div>
 
       </div>
     </Card>

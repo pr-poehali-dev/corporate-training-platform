@@ -18,6 +18,10 @@ interface Lesson {
   videoUrl?: string;
   testId?: string;
   order: number;
+  description?: string;
+  materials?: { id: string; title: string; type: 'pdf' | 'doc' | 'link' | 'video'; url: string }[];
+  requiresPrevious?: boolean;
+  imageUrl?: string;
 }
 
 interface CourseFormData {
@@ -31,6 +35,7 @@ interface CourseFormData {
   testId?: string;
   status: 'draft' | 'published' | 'archived';
   accessType: 'open' | 'closed';
+  sequenceType: 'linear' | 'free';
 }
 
 const initialFormData: CourseFormData = {
@@ -44,6 +49,7 @@ const initialFormData: CourseFormData = {
   testId: undefined,
   status: 'draft',
   accessType: 'open',
+  sequenceType: 'linear',
 };
 
 export default function CourseEditor() {
