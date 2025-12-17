@@ -31,13 +31,6 @@ export default function AdminDashboard() {
       color: 'bg-green-500',
       trend: 'Всего прохождений',
     },
-    {
-      title: 'Общая длительность',
-      value: `${mockCourses.reduce((sum, c) => sum + c.duration, 0)} мин`,
-      icon: 'Clock',
-      color: 'bg-orange-500',
-      trend: 'Учебного контента',
-    },
   ];
 
   return (
@@ -48,7 +41,7 @@ export default function AdminDashboard() {
           <p className="text-gray-600">Добро пожаловать в систему управления обучением</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {stats.map((stat, index) => (
             <Card key={index} className="transition-shadow hover:shadow-md">
               <CardContent className="p-6">
