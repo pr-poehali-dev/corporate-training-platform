@@ -28,6 +28,7 @@ export default function AdminUsers() {
 
   useEffect(() => {
     loadUsers();
+    loadAssignments();
   }, []);
 
   const loadUsers = async () => {
@@ -58,6 +59,21 @@ export default function AdminUsers() {
       console.error('Error loading users:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAssignments = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.ASSIGNMENTS, {
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAssignments(data.assignments || []);
+      }
+    } catch (error) {
+      console.error('Error loading assignments:', error);
     }
   };
 
@@ -94,7 +110,13 @@ export default function AdminUsers() {
   });
 
   const getUserProgress = (userId: string) => {
-    return { total: 0, completed: 0 };
+    const userAssignments = assignments.filter(a => a.userId === userId);
+    const completed = userAssignments.filter(a => a.status === 'completed').length;
+    return { total: userAssignments.length, completed };
+  };
+
+  const getUserAssignments = (userId: string) => {
+    return assignments.filter(a => a.userId === userId);
   };
 
   const handleViewDetails = (user: User) => {
@@ -214,7 +236,7 @@ export default function AdminUsers() {
       });
 
       if (response.ok) {
-        console.log('Курс назначен');
+        await loadAssignments();
       }
     } catch (error) {
       console.error('Error assigning course:', error);
@@ -222,7 +244,18 @@ export default function AdminUsers() {
   };
 
   const handleRemoveAssignment = async (assignmentId: string) => {
-    setAssignments(assignments.filter(a => a.id !== assignmentId));
+    try {
+      const response = await fetch(`${API_ENDPOINTS.ASSIGNMENTS}?id=${assignmentId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        await loadAssignments();
+      }
+    } catch (error) {
+      console.error('Error removing assignment:', error);
+    }
   };
 
   const students = users.filter((u) => u.role === 'student');
@@ -372,10 +405,10 @@ export default function AdminUsers() {
           onEditPassword={handleEditPassword}
           onEditUser={handleEditUser}
           onToggleActive={handleToggleActive}
-          userProgress={{ total: 0, completed: 0 }}
+          userProgress={getUserProgress(selectedUser.id)}
           onAssignCourse={handleAssignCourse}
           onRemoveAssignment={handleRemoveAssignment}
-          assignments={assignments}
+          assignments={getUserAssignments(selectedUser.id)}
         />
       )}
 

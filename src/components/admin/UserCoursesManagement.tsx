@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { User, CourseAssignment, Course } from '@/types';
-import { mockCourses, mockProgress, mockLessons, mockTests } from '@/data/mockData';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { API_ENDPOINTS, getAuthHeaders } from '@/config/api';
 
 interface UserCoursesManagementProps {
   user: User;
@@ -19,11 +19,31 @@ export default function UserCoursesManagement({
   onRemoveAssignment 
 }: UserCoursesManagementProps) {
   const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const userAssignments = assignments.filter(a => a.userId === user.id);
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_ENDPOINTS.COURSES, { headers: getAuthHeaders() });
+      if (response.ok) {
+        const data = await response.json();
+        setCourses(data.courses || []);
+      }
+    } catch (error) {
+      console.error('Error loading courses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const userAssignments = assignments;
   const assignedCourseIds = userAssignments.map(a => a.courseId);
-  const userProgressData = mockProgress.filter(p => p.userId === user.id);
-  const completedCourseIds = userProgressData.filter(p => p.completed).map(p => p.courseId);
+  const completedCourseIds = userAssignments.filter(a => a.status === 'completed').map(a => a.courseId);
 
   const getCourseStatus = (course: Course) => {
     const isCompleted = completedCourseIds.includes(course.id);
@@ -55,6 +75,16 @@ export default function UserCoursesManagement({
 
   if (user.role !== 'student') return null;
 
+  if (loading) {
+    return (
+      <div className="border-t pt-6">
+        <div className="flex justify-center py-4">
+          <Icon name="Loader2" className="animate-spin" size={24} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="border-t pt-6">
       <h5 className="font-bold mb-4 flex items-center gap-2">
@@ -69,83 +99,22 @@ export default function UserCoursesManagement({
             <h6 className="font-semibold text-gray-700">Открытые курсы</h6>
           </div>
           <div className="space-y-2">
-            {mockCourses.filter(c => c.accessType === 'open').map((course) => {
+            {courses.filter(c => c.accessType === 'open').map((course) => {
               const courseStatus = getCourseStatus(course);
-              const isExpanded = expandedCourseId === course.id;
-              const courseLessons = mockLessons.filter(l => l.courseId === course.id);
-              const finalTestLessons = courseLessons.filter(l => l.type === 'test' && l.isFinalTest);
-              const progressData = userProgressData.find(p => p.courseId === course.id);
               
               return (
-                <div key={course.id} className="bg-gray-50 rounded-lg overflow-hidden">
-                  <div 
-                    className="flex items-center justify-between p-4 hover:bg-gray-100 transition-colors cursor-pointer"
-                    onClick={() => setExpandedCourseId(isExpanded ? null : course.id)}
-                  >
-                    <div className="flex-1 flex items-center gap-3">
-                      <Icon 
-                        name={isExpanded ? "ChevronDown" : "ChevronRight"} 
-                        size={18} 
-                        className="text-gray-400"
-                      />
-                      <div>
-                        <div className="font-medium text-gray-900">{course.title}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">
-                          {course.lessonsCount} уроков • {course.duration} мин
-                        </div>
+                <div key={course.id} className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900">{course.title}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {course.lessonsCount} уроков • {course.duration} мин
                       </div>
                     </div>
                     <Badge className={courseStatus.color}>
                       {courseStatus.label}
                     </Badge>
                   </div>
-                  
-                  {isExpanded && (
-                    <div className="px-4 pb-4 space-y-3 border-t border-gray-200 pt-3">
-                      <div>
-                        <h6 className="text-sm font-semibold text-gray-700 mb-2">Уроки</h6>
-                        <div className="space-y-1">
-                          {courseLessons.map((lesson) => {
-                            const lessonCompleted = progressData?.completedLessonIds.includes(lesson.id);
-                            return (
-                              <div key={lesson.id} className="flex items-center justify-between py-2 px-3 bg-white rounded border border-gray-200">
-                                <div className="flex items-center gap-2">
-                                  <Icon 
-                                    name={lessonCompleted ? "CheckCircle" : "Circle"} 
-                                    size={14} 
-                                    className={lessonCompleted ? "text-green-500" : "text-gray-300"}
-                                  />
-                                  <span className="text-sm">{lesson.title}</span>
-                                </div>
-                                <span className="text-xs text-gray-500">{lesson.duration} мин</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      
-                      {finalTestLessons.length > 0 && (
-                        <div>
-                          <h6 className="text-sm font-semibold text-gray-700 mb-2">Итоговые тесты</h6>
-                          {finalTestLessons.map((lesson) => {
-                            const lessonCompleted = progressData?.completedLessonIds.includes(lesson.id);
-                            const test = mockTests.find(t => t.id === lesson.testId);
-                            return (
-                              <div key={lesson.id} className="flex items-center justify-between py-2 px-3 bg-blue-50 rounded border border-blue-200">
-                                <div className="flex items-center gap-2">
-                                  <Icon name="ClipboardCheck" size={14} className="text-blue-600" />
-                                  <span className="text-sm font-medium">{test?.title || lesson.title} (итоговый)</span>
-                                </div>
-                                <Badge className={lessonCompleted ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500'}>
-                                  {lessonCompleted ? `Пройден` : 'Не пройден'}
-                                </Badge>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -158,32 +127,18 @@ export default function UserCoursesManagement({
             <h6 className="font-semibold text-gray-700">Закрытые курсы</h6>
           </div>
           <div className="space-y-2">
-            {mockCourses.filter(c => c.accessType === 'closed').map((course) => {
+            {courses.filter(c => c.accessType === 'closed').map((course) => {
               const courseStatus = getCourseStatus(course);
-              const isExpanded = expandedCourseId === course.id;
-              const courseLessons = mockLessons.filter(l => l.courseId === course.id);
-              const finalTestLessons = courseLessons.filter(l => l.type === 'test' && l.isFinalTest);
-              const progressData = userProgressData.find(p => p.courseId === course.id);
               const assignment = userAssignments.find(a => a.courseId === course.id);
               const isAssigned = assignedCourseIds.includes(course.id);
               
               return (
-                <div key={course.id} className="bg-gray-50 rounded-lg overflow-hidden">
-                  <div 
-                    className="flex items-center justify-between p-4 hover:bg-gray-100 transition-colors cursor-pointer"
-                    onClick={() => setExpandedCourseId(isExpanded ? null : course.id)}
-                  >
-                    <div className="flex-1 flex items-center gap-3">
-                      <Icon 
-                        name={isExpanded ? "ChevronDown" : "ChevronRight"} 
-                        size={18} 
-                        className="text-gray-400"
-                      />
-                      <div>
-                        <div className="font-medium text-gray-900">{course.title}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">
-                          {course.lessonsCount} уроков • {course.duration} мин
-                        </div>
+                <div key={course.id} className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900">{course.title}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {course.lessonsCount} уроков • {course.duration} мин
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -194,10 +149,7 @@ export default function UserCoursesManagement({
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onAssignCourse(user.id, course.id);
-                          }}
+                          onClick={() => onAssignCourse(user.id, course.id)}
                         >
                           <Icon name="Plus" size={14} className="mr-1" />
                           Назначить
@@ -207,63 +159,13 @@ export default function UserCoursesManagement({
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRemoveAssignment(assignment.id);
-                          }}
+                          onClick={() => onRemoveAssignment(assignment.id)}
                         >
                           <Icon name="X" size={14} />
                         </Button>
                       )}
                     </div>
                   </div>
-                  
-                  {isExpanded && (
-                    <div className="px-4 pb-4 space-y-3 border-t border-gray-200 pt-3">
-                      <div>
-                        <h6 className="text-sm font-semibold text-gray-700 mb-2">Уроки</h6>
-                        <div className="space-y-1">
-                          {courseLessons.map((lesson) => {
-                            const lessonCompleted = progressData?.completedLessonIds.includes(lesson.id);
-                            return (
-                              <div key={lesson.id} className="flex items-center justify-between py-2 px-3 bg-white rounded border border-gray-200">
-                                <div className="flex items-center gap-2">
-                                  <Icon 
-                                    name={lessonCompleted ? "CheckCircle" : "Circle"} 
-                                    size={14} 
-                                    className={lessonCompleted ? "text-green-500" : "text-gray-300"}
-                                  />
-                                  <span className="text-sm">{lesson.title}</span>
-                                </div>
-                                <span className="text-xs text-gray-500">{lesson.duration} мин</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      
-                      {finalTestLessons.length > 0 && (
-                        <div>
-                          <h6 className="text-sm font-semibold text-gray-700 mb-2">Итоговые тесты</h6>
-                          {finalTestLessons.map((lesson) => {
-                            const lessonCompleted = progressData?.completedLessonIds.includes(lesson.id);
-                            const test = mockTests.find(t => t.id === lesson.testId);
-                            return (
-                              <div key={lesson.id} className="flex items-center justify-between py-2 px-3 bg-blue-50 rounded border border-blue-200">
-                                <div className="flex items-center gap-2">
-                                  <Icon name="ClipboardCheck" size={14} className="text-blue-600" />
-                                  <span className="text-sm font-medium">{test?.title || lesson.title} (итоговый)</span>
-                                </div>
-                                <Badge className={lessonCompleted ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500'}>
-                                  {lessonCompleted ? `Пройден` : 'Не пройден'}
-                                </Badge>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               );
             })}
