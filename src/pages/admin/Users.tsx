@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Icon from '@/components/ui/icon';
-import { mockUsers, mockProgress } from '@/data/mockData';
+import { mockUsers, mockProgress, mockAssignments } from '@/data/mockData';
 import { useState } from 'react';
 import UserFilters, { FilterState } from '@/components/admin/UserFilters';
 import UserDetailsModal from '@/components/admin/UserDetailsModal';
 import AddUserModal, { NewUserData } from '@/components/admin/AddUserModal';
-import { User } from '@/types';
+import { User, CourseAssignment } from '@/types';
 
 export default function AdminUsers() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +23,7 @@ export default function AdminUsers() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [users, setUsers] = useState(mockUsers);
+  const [assignments, setAssignments] = useState(mockAssignments);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -69,6 +70,22 @@ export default function AdminUsers() {
       lastActive: 'Только что',
     };
     setUsers([...users, newUser]);
+  };
+
+  const handleAssignCourse = (userId: string, courseId: string) => {
+    const newAssignment: CourseAssignment = {
+      id: `a${Date.now()}`,
+      courseId,
+      userId,
+      assignedBy: '1',
+      assignedAt: new Date().toISOString(),
+      status: 'assigned',
+    };
+    setAssignments([...assignments, newAssignment]);
+  };
+
+  const handleRemoveAssignment = (assignmentId: string) => {
+    setAssignments(assignments.filter(a => a.id !== assignmentId));
   };
 
   const students = users.filter((u) => u.role === 'student');
@@ -239,6 +256,8 @@ export default function AdminUsers() {
         onClose={() => setShowDetailsModal(false)}
         onEditRole={handleEditRole}
         userProgress={selectedUser ? getUserProgress(selectedUser.id) : { total: 0, completed: 0 }}
+        onAssignCourse={handleAssignCourse}
+        onRemoveAssignment={handleRemoveAssignment}
       />
 
       <AddUserModal

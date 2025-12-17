@@ -1,7 +1,17 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
-import { User } from '@/types';
+import { User, CourseAssignment } from '@/types';
+import { mockCourses, mockAssignments } from '@/data/mockData';
+import { useState } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface UserDetailsModalProps {
   show: boolean;
@@ -9,6 +19,8 @@ interface UserDetailsModalProps {
   onClose: () => void;
   onEditRole: (userId: string, newRole: 'admin' | 'student') => void;
   userProgress: { total: number; completed: number };
+  onAssignCourse?: (userId: string, courseId: string) => void;
+  onRemoveAssignment?: (assignmentId: string) => void;
 }
 
 export default function UserDetailsModal({
@@ -17,8 +29,38 @@ export default function UserDetailsModal({
   onClose,
   onEditRole,
   userProgress,
+  onAssignCourse,
+  onRemoveAssignment,
 }: UserDetailsModalProps) {
+  const [selectedCourse, setSelectedCourse] = useState('');
+  
   if (!show || !user) return null;
+
+  const userAssignments = mockAssignments.filter(a => a.userId === user.id);
+  const assignedCourseIds = userAssignments.map(a => a.courseId);
+  const availableCourses = mockCourses.filter(c => !assignedCourseIds.includes(c.id));
+
+  const handleAssign = () => {
+    if (selectedCourse && onAssignCourse) {
+      onAssignCourse(user.id, selectedCourse);
+      setSelectedCourse('');
+    }
+  };
+
+  const getStatusBadge = (status: CourseAssignment['status']) => {
+    switch (status) {
+      case 'assigned':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Назначен</Badge>;
+      case 'in_progress':
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">В процессе</Badge>;
+      case 'completed':
+        return <Badge className="bg-green-500">Завершен</Badge>;
+      case 'overdue':
+        return <Badge variant="destructive">Просрочен</Badge>;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -106,25 +148,99 @@ export default function UserDetailsModal({
             </div>
           </div>
 
+          {user.role === 'student' && (
+            <div className="border-t pt-6">
+              <h5 className="font-bold mb-4 flex items-center gap-2">
+                <Icon name="BookOpen" size={18} />
+                Назначенные курсы
+              </h5>
+              
+              <div className="space-y-3 mb-4">
+                {userAssignments.length > 0 ? (
+                  userAssignments.map((assignment) => {
+                    const course = mockCourses.find(c => c.id === assignment.courseId);
+                    return (
+                      <div key={assignment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{course?.title}</span>
+                            {getStatusBadge(assignment.status)}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Назначен: {new Date(assignment.assignedAt).toLocaleDateString('ru-RU')}
+                          </div>
+                        </div>
+                        {onRemoveAssignment && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onRemoveAssignment(assignment.id)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Icon name="Trash2" size={16} />
+                          </Button>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">Курсы не назначены</p>
+                )}
+              </div>
+
+              {availableCourses.length > 0 && onAssignCourse && (
+                <div className="border-t pt-4 mt-4">
+                  <Label className="text-sm font-medium mb-2 block">Назначить новый курс</Label>
+                  <div className="flex gap-2">
+                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Выберите курс" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableCourses.map((course) => (
+                          <SelectItem key={course.id} value={course.id}>
+                            {course.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      onClick={handleAssign} 
+                      disabled={!selectedCourse}
+                      size="sm"
+                    >
+                      <Icon name="Plus" size={16} className="mr-1" />
+                      Назначить
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="border-t pt-6">
             <h5 className="font-bold mb-4 flex items-center gap-2">
               <Icon name="Activity" size={18} />
-              Активность пользователя
+              Статистика
             </h5>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between py-2 border-b">
-                <span className="text-gray-600">Курсов начато</span>
-                <span className="font-medium">{userProgress.total}</span>
+                <span className="text-gray-600">Курсов назначено</span>
+                <span className="font-medium">{userAssignments.length}</span>
               </div>
               <div className="flex justify-between py-2 border-b">
-                <span className="text-gray-600">Курсов завершено</span>
-                <span className="font-medium">{userProgress.completed}</span>
+                <span className="text-gray-600">В процессе</span>
+                <span className="font-medium">{userAssignments.filter(a => a.status === 'in_progress').length}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-gray-600">Завершено</span>
+                <span className="font-medium">{userAssignments.filter(a => a.status === 'completed').length}</span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-600">Процент завершения</span>
                 <span className="font-medium">
-                  {userProgress.total > 0
-                    ? Math.round((userProgress.completed / userProgress.total) * 100)
+                  {userAssignments.length > 0
+                    ? Math.round((userAssignments.filter(a => a.status === 'completed').length / userAssignments.length) * 100)
                     : 0}
                   %
                 </span>

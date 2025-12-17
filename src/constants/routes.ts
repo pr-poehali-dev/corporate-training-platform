@@ -6,7 +6,6 @@ export const ROUTES = {
     COURSES: '/admin/courses',
     COURSE_EDITOR: '/admin/courses/edit/:courseId?',
     COURSE_VIEW: '/admin/courses/view/:courseId',
-    ASSIGNMENTS: '/admin/assignments',
     USERS: '/admin/users',
     TESTS: '/admin/tests',
     REWARDS: '/admin/rewards',
