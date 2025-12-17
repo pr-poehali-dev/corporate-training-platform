@@ -100,45 +100,6 @@ export default function StudentDashboard() {
                 </div>
               </CardContent>
             </Card>
-
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Icon name="Sparkles" size={20} />
-                  Рекомендуемые курсы
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {mockCourses.slice(2, 4).map((course) => (
-                    <div key={course.id} className="group p-3 bg-muted rounded-lg hover:shadow-md transition-all cursor-pointer" onClick={() => navigate(`/student/courses/${course.id}`)}>
-                      <div className="relative w-full h-28 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-2 overflow-hidden">
-                        <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryGradient(course.category)} opacity-10`} />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${getCategoryGradient(course.category)} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
-                            <Icon name={getCategoryIcon(course.category) as any} size={32} className="text-white" />
-                          </div>
-                        </div>
-                      </div>
-                      <h4 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">{course.title}</h4>
-                      <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
-                        <span className="flex items-center gap-1">
-                          <Icon name="BookOpen" size={12} />
-                          {course.lessonsCount} ур.
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Icon name="Clock" size={12} />
-                          {course.duration} мин
-                        </span>
-                      </div>
-                      <Button className="w-full" variant="outline" size="sm">
-                        Начать
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
         <div className="space-y-5">
