@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '@/types';
-import { mockUsers } from '@/data/mockData';
+import { API_ENDPOINTS, getAuthHeaders, setAuthToken, removeAuthToken } from '@/config/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => boolean;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -21,21 +21,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = (email: string, password: string): boolean => {
-    const foundUser = mockUsers.find(u => u.email === email);
-    
-    if (foundUser && password === 'password') {
-      setUser(foundUser);
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
-      return true;
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.AUTH}?action=login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+      
+      if (data.token && data.user) {
+        setAuthToken(data.token);
+        setUser(data.user);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    
-    return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch(`${API_ENDPOINTS.AUTH}?action=logout`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    
     setUser(null);
     localStorage.removeItem('currentUser');
+    removeAuthToken();
   };
 
   return (

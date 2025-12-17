@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Icon from '@/components/ui/icon';
 import { ROUTES } from '@/constants/routes';
@@ -16,8 +16,11 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    
     setError('');
     
     if (!email || !password) {
@@ -25,7 +28,9 @@ export default function Login() {
       return;
     }
 
-    const success = login(email, password);
+    setLoading(true);
+    const success = await login(email, password);
+    setLoading(false);
     
     if (success) {
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -56,92 +61,63 @@ export default function Login() {
             <CardDescription>Введите свои учетные данные для входа</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="student" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="student" onClick={() => setEmail('student@company.com')}>
-                  Обучающийся
-                </TabsTrigger>
-                <TabsTrigger value="admin" onClick={() => setEmail('admin@company.com')}>
-                  Администратор
-                </TabsTrigger>
-              </TabsList>
-              
+            <form onSubmit={handleLogin} className="space-y-4">
               {error && (
-                <Alert variant="destructive" className="mb-4">
+                <Alert variant="destructive">
                   <Icon name="AlertCircle" size={16} />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
-              <TabsContent value="student" className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="student-email">Email</Label>
-                  <Input
-                    id="student-email"
-                    type="email"
-                    placeholder="student@company.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="student-password">Пароль</Label>
-                  <Input
-                    id="student-password"
-                    type="password"
-                    placeholder="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                  />
-                </div>
-                <Button 
-                  onClick={handleLogin} 
-                  className="w-full bg-primary hover:bg-primary/90"
-                  size="lg"
-                >
-                  <Icon name="LogIn" className="mr-2" size={18} />
-                  Войти как обучающийся
-                </Button>
-              </TabsContent>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your.email@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  required
+                />
+              </div>
               
-              <TabsContent value="admin" className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="admin-email">Email</Label>
-                  <Input
-                    id="admin-email"
-                    type="email"
-                    placeholder="admin@company.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="admin-password">Пароль</Label>
-                  <Input
-                    id="admin-password"
-                    type="password"
-                    placeholder="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                  />
-                </div>
-                <Button 
-                  onClick={handleLogin} 
-                  className="w-full bg-primary hover:bg-primary/90"
-                  size="lg"
-                >
-                  <Icon name="ShieldCheck" className="mr-2" size={18} />
-                  Войти как администратор
-                </Button>
-                <p className="text-xs text-gray-500 text-center">
-                  Демо: admin@company.com / password
-                </p>
-              </TabsContent>
-            </Tabs>
+              <div className="space-y-2">
+                <Label htmlFor="password">Пароль</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Введите пароль"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                />
+              </div>
+              
+              <Button 
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90"
+                size="lg"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Icon name="Loader2" className="mr-2 animate-spin" size={18} />
+                    Вход...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="LogIn" className="mr-2" size={18} />
+                    Войти
+                  </>
+                )}
+              </Button>
+              
+              <p className="text-xs text-gray-500 text-center">
+                Тестовый доступ: admin@example.com / admin123
+              </p>
+            </form>
           </CardContent>
         </Card>
       </div>
