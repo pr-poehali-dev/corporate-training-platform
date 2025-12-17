@@ -19,6 +19,9 @@ export const mockCourses: Course[] = [
     startDate: '01.01.2024',
     endDate: '31.12.2024',
     accessType: 'open',
+    finalTestId: 'test1',
+    finalTestRequiresAllLessons: true,
+    finalTestRequiresAllTests: true,
   },
   {
     id: '2',
@@ -57,6 +60,8 @@ export const mockCourses: Course[] = [
     startDate: '01.03.2024',
     endDate: '01.09.2024',
     accessType: 'closed',
+    finalTestId: 'test3',
+    finalTestRequiresAllLessons: true,
   },
   {
     id: '4',
@@ -377,9 +382,6 @@ export const mockTests: Test[] = [
     status: 'published',
     createdAt: '10.12.2024',
     updatedAt: '15.12.2024',
-    isFinal: true,
-    requiresAllLessons: true,
-    requiresAllTests: true,
   },
   {
     id: 'test2',
@@ -394,7 +396,6 @@ export const mockTests: Test[] = [
     status: 'published',
     createdAt: '05.12.2024',
     updatedAt: '12.12.2024',
-    isFinal: false,
   },
   {
     id: 'test3',
@@ -408,8 +409,6 @@ export const mockTests: Test[] = [
     status: 'published',
     createdAt: '01.12.2024',
     updatedAt: '10.12.2024',
-    isFinal: true,
-    requiresAllLessons: true,
   },
   {
     id: 'test4',
@@ -418,7 +417,6 @@ export const mockTests: Test[] = [
     description: 'Комплексная проверка знаний по бизнес-моделям и финансовому планированию',
     passScore: 85,
     timeLimit: 45,
-    isFinal: false,
     attempts: 2,
     questionsCount: 12,
     status: 'draft',

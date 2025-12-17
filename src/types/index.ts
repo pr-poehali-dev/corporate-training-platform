@@ -33,6 +33,9 @@ export interface Course {
   endDate?: string;
   prerequisiteCourses?: string[];
   accessType: 'open' | 'closed';
+  finalTestId?: string;
+  finalTestRequiresAllLessons?: boolean;
+  finalTestRequiresAllTests?: boolean;
 }
 
 export interface Lesson {
@@ -70,9 +73,6 @@ export interface Test {
   status: 'draft' | 'published';
   createdAt: string;
   updatedAt: string;
-  isFinal: boolean;
-  requiresAllLessons?: boolean;
-  requiresAllTests?: boolean;
 }
 
 export interface Question {

@@ -32,7 +32,9 @@ interface CourseFormData {
   instructor: string;
   image: string;
   lessons: Lesson[];
-  testId?: string;
+  finalTestId?: string;
+  finalTestRequiresAllLessons?: boolean;
+  finalTestRequiresAllTests?: boolean;
   status: 'draft' | 'published' | 'archived';
   accessType: 'open' | 'closed';
   sequenceType: 'linear' | 'free';
@@ -46,7 +48,9 @@ const initialFormData: CourseFormData = {
   instructor: '',
   image: '',
   lessons: [],
-  testId: undefined,
+  finalTestId: undefined,
+  finalTestRequiresAllLessons: false,
+  finalTestRequiresAllTests: false,
   status: 'draft',
   accessType: 'open',
   sequenceType: 'linear',
