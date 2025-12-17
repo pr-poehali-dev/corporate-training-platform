@@ -32,20 +32,39 @@ export default function StudentProfile() {
               {currentUser?.name.split(' ').map(n => n[0]).join('')}
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-1">
+              <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold text-gray-900">{currentUser?.name}</h1>
               </div>
-              <p className="text-gray-600 mb-1">{currentUser?.email}</p>
-              {currentUser?.position && (
-                <p className="text-gray-600 mb-1">Должность: {currentUser.position}</p>
-              )}
-              {currentUser?.department && (
-                <p className="text-gray-600 mb-1">Отдел: {currentUser.department}</p>
-              )}
-              {currentUser?.phone && (
-                <p className="text-gray-600 mb-3">Телефон: {currentUser.phone}</p>
-              )}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-2">
+              
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Icon name="Mail" size={16} className="text-gray-400" />
+                  <span>{currentUser?.email}</span>
+                </div>
+                
+                {currentUser?.position && (
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Icon name="Briefcase" size={16} className="text-gray-400" />
+                    <span>{currentUser.position}</span>
+                  </div>
+                )}
+                
+                {currentUser?.department && (
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Icon name="Building" size={16} className="text-gray-400" />
+                    <span>{currentUser.department}</span>
+                  </div>
+                )}
+                
+                {currentUser?.phone && (
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Icon name="Phone" size={16} className="text-gray-400" />
+                    <span>{currentUser.phone}</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 pt-3 border-t border-gray-200">
                 <span className="flex items-center gap-1">
                   <Icon name="Calendar" size={14} />
                   Регистрация: {new Date(currentUser?.registrationDate || '').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
