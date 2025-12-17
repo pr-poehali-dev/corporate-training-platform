@@ -28,7 +28,6 @@ export default function UserProfileEditModal({
     if (editedUser && user) {
       onSave(user.id, {
         name: editedUser.name,
-        email: editedUser.email,
         position: editedUser.position,
         department: editedUser.department,
         phone: editedUser.phone,
@@ -69,9 +68,10 @@ export default function UserProfileEditModal({
             <input
               type="email"
               value={editedUser.email}
-              onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              disabled
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
             />
+            <p className="text-xs text-gray-500 mt-1">Email нельзя изменить</p>
           </div>
 
           <div>
