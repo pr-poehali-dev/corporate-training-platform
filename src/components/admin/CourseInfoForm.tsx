@@ -1,7 +1,9 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
 import { mockTests } from '@/data/mockData';
+import { useState } from 'react';
 
 interface CourseFormData {
   title: string;
@@ -22,6 +24,17 @@ interface CourseInfoFormProps {
 }
 
 export default function CourseInfoForm({ formData, onInputChange }: CourseInfoFormProps) {
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (file: File) => {
+    setUploadingImage(true);
+    const fakeUrl = URL.createObjectURL(file);
+    setTimeout(() => {
+      onInputChange('image', fakeUrl);
+      setUploadingImage(false);
+    }, 500);
+  };
+
   return (
     <Card className="col-span-2 p-6">
       <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
@@ -105,22 +118,71 @@ export default function CourseInfoForm({ formData, onInputChange }: CourseInfoFo
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            URL изображения
+            Обложка курса
           </label>
-          <input
-            type="text"
-            value={formData.image}
-            onChange={(e) => onInputChange('image', e.target.value)}
-            placeholder="https://example.com/image.jpg"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-          {formData.image && (
-            <img
-              src={formData.image}
-              alt="Preview"
-              className="mt-2 w-full h-48 object-cover rounded-lg"
-            />
-          )}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+            {formData.image ? (
+              <div className="space-y-3">
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+                <div className="flex justify-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                    className="hidden"
+                    id="course-image-upload"
+                  />
+                  <label htmlFor="course-image-upload">
+                    <Button type="button" variant="outline" size="sm" asChild disabled={uploadingImage}>
+                      <span>
+                        <Icon name="Upload" size={14} className="mr-2" />
+                        Заменить изображение
+                      </span>
+                    </Button>
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onInputChange('image', '')}
+                  >
+                    <Icon name="X" size={14} className="mr-2" />
+                    Удалить
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center">
+                <Icon name="Image" size={32} className="mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600 mb-3">Загрузите обложку курса</p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageUpload(file);
+                  }}
+                  className="hidden"
+                  id="course-image-upload-new"
+                />
+                <label htmlFor="course-image-upload-new">
+                  <Button type="button" variant="outline" size="sm" asChild disabled={uploadingImage}>
+                    <span>
+                      <Icon name="Upload" size={14} className="mr-2" />
+                      {uploadingImage ? 'Загрузка...' : 'Загрузить файл'}
+                    </span>
+                  </Button>
+                </label>
+              </div>
+            )}
+          </div>
         </div>
 
         <div>
