@@ -258,6 +258,7 @@ export default function AdminUsers() {
         userProgress={selectedUser ? getUserProgress(selectedUser.id) : { total: 0, completed: 0 }}
         onAssignCourse={handleAssignCourse}
         onRemoveAssignment={handleRemoveAssignment}
+        assignments={assignments}
       />
 
       <AddUserModal
