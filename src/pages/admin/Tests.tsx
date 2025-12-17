@@ -22,16 +22,10 @@ interface Test {
   updatedAt: string;
 }
 
-interface Course {
-  id: string;
-  title: string;
-}
-
 export default function Tests() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [tests, setTests] = useState<Test[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,20 +35,10 @@ export default function Tests() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const coursesRes = await fetch(API_ENDPOINTS.COURSES, { headers: getAuthHeaders() });
-      if (coursesRes.ok) {
-        const coursesData = await coursesRes.json();
-        setCourses(coursesData.courses || []);
-        
-        const allTests: Test[] = [];
-        for (const course of (coursesData.courses || [])) {
-          const testsRes = await fetch(`${API_ENDPOINTS.TESTS}?courseId=${course.id}`, { headers: getAuthHeaders() });
-          if (testsRes.ok) {
-            const testsData = await testsRes.json();
-            allTests.push(...(testsData.tests || []));
-          }
-        }
-        setTests(allTests);
+      const testsRes = await fetch(API_ENDPOINTS.TESTS, { headers: getAuthHeaders() });
+      if (testsRes.ok) {
+        const testsData = await testsRes.json();
+        setTests(testsData.tests || []);
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -68,11 +52,6 @@ export default function Tests() {
     if (filter === 'draft') return test.status === 'draft';
     return true;
   });
-
-  const getCourseTitle = (courseId: string) => {
-    const course = courses.find(c => c.id === courseId);
-    return course?.title || 'Неизвестный курс';
-  };
 
   return (
     <AdminLayout>
@@ -181,10 +160,6 @@ export default function Tests() {
                       </Badge>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{test.description}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Icon name="BookOpen" size={14} />
-                      <span>{getCourseTitle(test.courseId)}</span>
-                    </div>
                   </div>
                 </div>
 

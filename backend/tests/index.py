@@ -11,8 +11,6 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production'
 JWT_ALGORITHM = 'HS256'
 
 class CreateTestRequest(BaseModel):
-    courseId: str = Field(..., min_length=1)
-    lessonId: Optional[str] = None
     title: str = Field(..., min_length=1)
     description: Optional[str] = None
     passScore: int = Field(default=70, ge=0, le=100)
@@ -103,7 +101,6 @@ def format_question_response(question_row: tuple) -> Dict[str, Any]:
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
     Управление тестами и вопросами
-    GET ?courseId=x - все тесты курса
     GET ?id=x - один тест
     GET ?testId=x&action=questions - вопросы теста
     POST - создать тест (админ)
@@ -163,26 +160,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    if method == 'GET' and course_id:
-        cur.execute(
-            "SELECT id, course_id, lesson_id, title, description, pass_score, time_limit, "
-            "attempts, questions_count, status, created_at, updated_at "
-            "FROM tests WHERE course_id = %s ORDER BY created_at DESC",
-            (course_id,)
-        )
-        tests = cur.fetchall()
-        tests_list = [format_test_response(test) for test in tests]
-        
-        cur.close()
-        conn.close()
-        
-        return {
-            'statusCode': 200,
-            'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'tests': tests_list}, ensure_ascii=False),
-            'isBase64Encoded': False
-        }
-    
     if method == 'GET' and test_id:
         cur.execute(
             "SELECT id, course_id, lesson_id, title, description, pass_score, time_limit, "
@@ -210,6 +187,25 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 200,
             'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
             'body': json.dumps({'test': test_data}, ensure_ascii=False),
+            'isBase64Encoded': False
+        }
+    
+    if method == 'GET':
+        cur.execute(
+            "SELECT id, course_id, lesson_id, title, description, pass_score, time_limit, "
+            "attempts, questions_count, status, created_at, updated_at "
+            "FROM tests ORDER BY created_at DESC"
+        )
+        tests = cur.fetchall()
+        tests_list = [format_test_response(test) for test in tests]
+        
+        cur.close()
+        conn.close()
+        
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'tests': tests_list}, ensure_ascii=False),
             'isBase64Encoded': False
         }
     
@@ -278,32 +274,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         body_data = json.loads(event.get('body', '{}'))
         create_req = CreateTestRequest(**body_data)
         
-        # Проверяем что курс существует
-        cur.execute("SELECT id FROM courses WHERE id = %s", (create_req.courseId,))
-        if not cur.fetchone():
-            cur.close()
-            conn.close()
-            return {
-                'statusCode': 400,
-                'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Курс с указанным ID не найден'}, ensure_ascii=False),
-                'isBase64Encoded': False
-            }
-        
-        # Если указан урок, проверяем что он существует
-        lesson_id_value = create_req.lessonId
-        if lesson_id_value:
-            cur.execute("SELECT id FROM lessons WHERE id = %s", (lesson_id_value,))
-            if not cur.fetchone():
-                cur.close()
-                conn.close()
-                return {
-                    'statusCode': 400,
-                    'headers': {'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({'error': 'Урок с указанным ID не найден'}, ensure_ascii=False),
-                    'isBase64Encoded': False
-                }
-        
         new_test_id = str(uuid.uuid4())
         now = datetime.utcnow()
         
@@ -313,7 +283,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
             "RETURNING id, course_id, lesson_id, title, description, pass_score, time_limit, attempts, "
             "questions_count, status, created_at, updated_at",
-            (new_test_id, create_req.courseId, lesson_id_value, create_req.title,
+            (new_test_id, None, None, create_req.title,
              create_req.description, create_req.passScore, create_req.timeLimit, create_req.attempts,
              0, 'draft', now, now)
         )

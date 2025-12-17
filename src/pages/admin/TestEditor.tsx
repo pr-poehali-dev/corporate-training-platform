@@ -57,57 +57,12 @@ export default function TestEditor() {
   const [showQuestionDialog, setShowQuestionDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingTest, setLoadingTest] = useState(isEditMode);
-  const [courseId, setCourseId] = useState<string>('');
-  const [lessonId, setLessonId] = useState<string>('');
-  const [courses, setCourses] = useState<Array<{id: string, title: string}>>([]);
-  const [lessons, setLessons] = useState<Array<{id: string, title: string}>>([]);
-  const [loadingData, setLoadingData] = useState(false);
 
   useEffect(() => {
-    loadCourses();
     if (isEditMode && testId) {
       loadTest(testId);
     }
   }, [testId, isEditMode]);
-
-  useEffect(() => {
-    if (courseId) {
-      loadLessons(courseId);
-    } else {
-      setLessons([]);
-      setLessonId('');
-    }
-  }, [courseId]);
-
-  const loadCourses = async () => {
-    setLoadingData(true);
-    try {
-      const response = await fetch(API_ENDPOINTS.COURSES, { headers: getAuthHeaders() });
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data.courses || []);
-      }
-    } catch (error) {
-      console.error('Error loading courses:', error);
-    } finally {
-      setLoadingData(false);
-    }
-  };
-
-  const loadLessons = async (cId: string) => {
-    setLoadingData(true);
-    try {
-      const response = await fetch(`${API_ENDPOINTS.LESSONS}?courseId=${cId}`, { headers: getAuthHeaders() });
-      if (response.ok) {
-        const data = await response.json();
-        setLessons(data.lessons || []);
-      }
-    } catch (error) {
-      console.error('Error loading lessons:', error);
-    } finally {
-      setLoadingData(false);
-    }
-  };
 
   const loadTest = async (id: string) => {
     setLoadingTest(true);
@@ -120,9 +75,6 @@ export default function TestEditor() {
       if (testRes.ok && questionsRes.ok) {
         const testData = await testRes.json();
         const questionsData = await questionsRes.json();
-        
-        setCourseId(testData.test.courseId || '');
-        setLessonId(testData.test.lessonId || '');
         
         setFormData({
           title: testData.test.title || '',
@@ -251,11 +203,6 @@ export default function TestEditor() {
   };
 
   const handleSaveTest = async () => {
-    if (!courseId) {
-      alert('Выберите курс для теста');
-      return;
-    }
-    
     if (!formData.title.trim()) {
       alert('Введите название теста');
       return;
@@ -267,8 +214,6 @@ export default function TestEditor() {
       const url = isEditMode ? `${API_ENDPOINTS.TESTS}?id=${testId}` : API_ENDPOINTS.TESTS;
 
       const testPayload = {
-        courseId: courseId,
-        lessonId: lessonId || null,
         title: formData.title,
         description: formData.description,
         passScore: formData.passScore,
@@ -387,44 +332,6 @@ export default function TestEditor() {
         </div>
 
       <div className="space-y-6">
-        <div className="bg-white p-6 rounded-lg border border-gray-200 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Привязка к курсу</h2>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Курс <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={courseId}
-              onChange={(e) => setCourseId(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              disabled={isEditMode}
-            >
-              <option value="">Выберите курс</option>
-              {courses.map(course => (
-                <option key={course.id} value={course.id}>{course.title}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Урок (опционально)
-            </label>
-            <select
-              value={lessonId}
-              onChange={(e) => setLessonId(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              disabled={!courseId || loadingData}
-            >
-              <option value="">Без привязки к уроку</option>
-              {lessons.map(lesson => (
-                <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <TestInfoForm
