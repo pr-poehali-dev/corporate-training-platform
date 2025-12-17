@@ -73,12 +73,18 @@ export default function AdminUsers() {
   };
 
   const handleAssignCourse = (userId: string, courseId: string) => {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const formattedDate = `${day}.${month}.${year}`;
+    
     const newAssignment: CourseAssignment = {
       id: `a${Date.now()}`,
       courseId,
       userId,
       assignedBy: '1',
-      assignedAt: new Date().toISOString(),
+      assignedAt: formattedDate,
       status: 'assigned',
     };
     setAssignments([...assignments, newAssignment]);
