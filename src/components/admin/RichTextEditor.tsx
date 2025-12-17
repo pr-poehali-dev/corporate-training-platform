@@ -5,17 +5,11 @@ import Icon from '@/components/ui/icon';
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
-  onInsertImage: () => void;
-  onInsertVideo: () => void;
-  onInsertPDF: () => void;
 }
 
 export default function RichTextEditor({
   value,
   onChange,
-  onInsertImage,
-  onInsertVideo,
-  onInsertPDF,
 }: RichTextEditorProps) {
   const [selectionStart, setSelectionStart] = useState(0);
   const [selectionEnd, setSelectionEnd] = useState(0);
@@ -168,39 +162,6 @@ export default function RichTextEditor({
             className="h-8 w-8 p-0"
           >
             <Icon name="Link" size={16} />
-          </Button>
-        </div>
-
-        <div className="flex gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onInsertImage}
-            title="Вставить изображение"
-            className="h-8 w-8 p-0"
-          >
-            <Icon name="Image" size={16} />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onInsertVideo}
-            title="Вставить видео"
-            className="h-8 w-8 p-0"
-          >
-            <Icon name="Video" size={16} />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onInsertPDF}
-            title="Вставить PDF"
-            className="h-8 w-8 p-0"
-          >
-            <Icon name="FileText" size={16} />
           </Button>
         </div>
       </div>
