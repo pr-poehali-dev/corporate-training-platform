@@ -216,7 +216,7 @@ export default function LessonDialog({
                       <div className="mt-3">
                         <input
                           type="text"
-                          placeholder="или вставьте ссылку YouTube/Vimeo"
+                          placeholder="или вставьте ссылку VK/Rutube"
                           onChange={(e) => onLessonChange('videoUrl', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                         />
