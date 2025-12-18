@@ -81,14 +81,14 @@ export default function CreateRewardDialog({
           Создать награду
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Создать новую награду</DialogTitle>
           <DialogDescription>
             Добавьте новую награду за прохождение курса
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-6 py-4">
+        <div className="space-y-4 py-4">
           <div>
             <Label htmlFor="reward-name">Название награды</Label>
             <Input
@@ -148,33 +148,33 @@ export default function CreateRewardDialog({
 
           <div>
             <Label>Выберите цвет</Label>
-            <div className="grid grid-cols-3 gap-3 mt-2">
+            <div className="grid grid-cols-3 gap-2 mt-2">
               {colors.map((color) => (
                 <button
                   key={color.value}
                   onClick={() => setSelectedColor(color.value)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`p-3 rounded-lg border-2 transition-all ${
                     selectedColor === color.value
-                      ? 'border-gray-900 scale-105'
+                      ? 'border-gray-900'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                   style={{ backgroundColor: color.value + '20' }}
                 >
                   <div
-                    className="w-full h-8 rounded"
+                    className="w-full h-6 rounded"
                     style={{ backgroundColor: color.value }}
                   />
-                  <div className="text-sm font-medium text-gray-700 mt-2">{color.name}</div>
+                  <div className="text-xs font-medium text-gray-700 mt-1">{color.name}</div>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="p-6 bg-gray-50 rounded-xl">
-            <Label className="mb-3 block">Предпросмотр</Label>
+          <div className="p-4 bg-gray-50 rounded-xl">
+            <Label className="mb-2 block text-sm">Предпросмотр</Label>
             <div className="flex items-center justify-center">
               <div
-                className="w-32 h-32 rounded-2xl flex items-center justify-center text-6xl border-4"
+                className="w-24 h-24 rounded-2xl flex items-center justify-center text-5xl border-4"
                 style={{
                   backgroundColor: selectedColor + '20',
                   borderColor: selectedColor,
