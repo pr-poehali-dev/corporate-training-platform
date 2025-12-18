@@ -116,8 +116,6 @@ export default function Rewards() {
   };
 
   const handleDeleteReward = async (rewardId: string) => {
-    if (!confirm('Удалить награду?')) return;
-
     try {
       const response = await fetch(`${API_ENDPOINTS.REWARDS}?id=${rewardId}`, {
         method: 'DELETE',
